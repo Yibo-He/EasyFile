@@ -1,12 +1,12 @@
 class Font:
-    def __init__(self, color=-1, name="", size=0):
+    def __init__(self, color="", name="", size=0):
         self.color = color
         self.name = name
         self.size = size
 
 
 class RepStr:
-    def __init__(self, str="", color=-1, name="", size=0):
+    def __init__(self, str="", color="", name="", size=0):
         self.str = str
         self.font = Font(color, name, size)
 
