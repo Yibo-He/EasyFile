@@ -15,9 +15,11 @@
 [
 
   {"str":"用户","typeface":"等线","size":16,"color":"000000"},
-  {"str":"我","typeface":"宋体","size":12,"color":"66ccff"}
+  
+  {"str":"我","typeface":"宋体","size":12,"color":"66ccff"},
 
   {"str":"图","typeface":"","size":0,"color":""},
+  
   {"str":"我","typeface":"宋体","size":12,"color":"66ccff"}
 
 ]
