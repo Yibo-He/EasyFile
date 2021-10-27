@@ -6,6 +6,15 @@ def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
+@click.command('init-db')
+@with_appcontext
+def init_db_command():
+    init_db()
+    click.echo('Initialized the database.')
+    
+def init_db():
+    pass
+
 def get_db():
     # if 'db' not in g:
     #     g.db = sqlite3.connect(
@@ -20,11 +29,8 @@ def get_db():
 def close_db(e=None):
     pass
 
-def init_db():
-    pass
+def get_user_docID(user_id):
+    return 0
 
-@click.command('init-db')
-@with_appcontext
-def init_db_command():
-    init_db()
-    click.echo('Initialized the database.')
+def update_docID(user_id, new_docID):
+    pass
