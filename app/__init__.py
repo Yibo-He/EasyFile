@@ -16,6 +16,7 @@ def create_app(test_config = None):
         pass
 
     from . import db
+    # print("Trying to initialize db...")
     db.init_app(app)
 
     from .blueprints import auth
