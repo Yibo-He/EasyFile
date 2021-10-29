@@ -7,6 +7,15 @@ def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
+@click.command('init-db')
+@with_appcontext
+def init_db_command():
+    init_db()
+    click.echo('Initialized the database.')
+    
+def init_db():
+    pass
+
 def get_db():
     if 'db' not in g:
         db_config = current_app.config['DATABASE']
@@ -20,6 +29,7 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
+
 
 def init_db():
     # the code below has been checked in mysql.
@@ -73,9 +83,9 @@ def check_password(username, passwd):
             "info": "Illegal Input"
         }
         return False, info
+      
+def get_user_docID(user_id):
+    return 0
 
-@click.command('init-db')
-@with_appcontext
-def init_db_command():
-    init_db()
-    click.echo('Initialized the database.')
+def update_docID(user_id, new_docID):
+    pass
