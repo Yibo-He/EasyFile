@@ -28,11 +28,16 @@ def index():
 def upload_doc():
     files_dict = request.files
     docID = get_user_docID(session.get('user_id'))
+    jsondata = {'state': 0, 'info':'success', 'filenames':[] }  # to mark the state
+
     file_names = []
     error = None
 
     if files_dict is None:
         error = '未上传文件'
+        jsondata['state'] = 1
+        jsondata['info'] = error
+        return jsonify(jsondata)
 
     if error is None:
         for file_obj in files_dict.values():
@@ -42,14 +47,17 @@ def upload_doc():
                 file_obj.save(file_path)
             except:
                 error = '文件上传失败: ' + file_obj.filename if error is None else error + ', ' + file_obj.filename
-
+                jsondata['state'] = 2
+                jsondata['info'] = error
             file_names.append(file_path)
             docID = docID + 1
+        jsondata['filenames'] = file_names
 
-    flash(error)
+    # flash(error)
     update_docID(session.get('user_id'), docID)
 
-    return jsonify(file_names)
+    # return jsonify(file_names)
+    return jsonify(jsondata)
 
 
 @bp.route('/run_formatter', methods=['POST'])
@@ -58,24 +66,32 @@ def run_formatter():
     file_names = literal_eval(request.form['file_names'])
     requirements = get_reqs(request.form)
     formatted_names = []
+    jsondata = {'state': 0, 'info':'success', 'formatted_names':[] }  # to mark the state
+
 
     error = check_file_permission(file_names)
+    if error is not None:
+        jsondata['state'] = 1
+        jsondata['info'] = error
+        return jsonify(jsondata)
 
-    if error is None:
+    else:
         for file_name in file_names:
             raw_doc = docx.Document(os.path.join('./temp/', file_name))
             try:
                 formatted_doc = formatter(raw_doc, requirements)
             except:
                 error = '文件格式转换失败: ' + file_name if error is None else error + ', ' + file_name
-
+                jsondata['state'] = 2
+                jsondata['info'] = error
             formatted_name = 'formatted_' + file_name
             formatted_doc.save(os.path.join('./temp/', formatted_name))
             formatted_names.append(formatted_name)
-        
-    flash(error)
+        jsondata['formatted_names'] = formatted_names
 
-    return jsonify(formatted_names)
+    # flash(error)
+    # return jsonify(formatted_names)
+    return jsonify(jsondata)
 
 def check_file_permission(file_names):
     return None

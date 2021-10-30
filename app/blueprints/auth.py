@@ -1,6 +1,6 @@
 import functools
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
 from pymysql import cursors
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -17,36 +17,33 @@ def register():
         password = request.form['password']
         db = get_db()
         cursor = db.cursor()
-        error = None
+        # error = None
+        jsondata = {'state': 0, 'info':'success'}  # to mark the state
 
         if not username:
-            error = 'Username is required.'
+            # error = 'Username is required.'
+            jsondata['state'] = 1
+            jsondata['info'] = 'Username is required'
+            return jsonify(jsondata)
         elif not password:
-            error = 'Password is required.'
+            # error = 'Password is required.'
+            jsondata['state'] = 2
+            jsondata['info'] = 'Password is required'
+            return jsonify(jsondata)
+        else:
 
-        
-        result, info = create_user(username, password)
-        if result:
-            return redirect(url_for("auth.login"))
+            result, info = create_user(username, password)
+            if not result:
+                jsondata['state'] = 3
+                jsondata['info'] = info
+                
 
-        error = info
-        '''
-        if error is None:
-            try:
-                cursor.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
-                )
-                db.commit()
-            except db.IntegrityError:
-                error = f"User {username} is already registered."
-            else:
-                return redirect(url_for("auth.login"))
-        '''
-        
-        flash(error)
-
-    return render_template('auth/register.html')
+        return jsonify(jsondata)
+            # if result:
+            #     return redirect(url_for("auth.login"))
+            # error = info
+        # flash(error)
+    # return render_template('auth/register.html')
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
@@ -54,6 +51,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         print("getting username and password", username, password)
+        jsondata = {'state': 0, 'info':'success'}  # to mark the state
         '''
         error = None
         user = db.execute(
@@ -76,11 +74,14 @@ def login():
             session.clear()
             session['user_id'] = info['id']
             print("ok")
-            return redirect(url_for('index'))
+            # return redirect(url_for('index'))
         else:
-            flash(info['info'])
+            # flash(info['info'])
+            jsondata['state'] = 1
+            jsondata['info'] = info['info']
 
-    return render_template('auth/login.html')
+    # return render_template('auth/login.html')
+    return jsonify(jsondata)
 
 
 @bp.before_app_request
@@ -102,7 +103,9 @@ def login_required(view):
 
     return wrapped_view
     
-@bp.route('/logout')
+@bp.route('/logout',methods=('GET', 'POST'))
 def logout():
+    jsondata = {'state': 0, 'info':'success'}  # to mark the state
     session.clear()
-    return redirect(url_for('index'))
+    # return redirect(url_for('index'))
+    return jsonify(jsondata)
