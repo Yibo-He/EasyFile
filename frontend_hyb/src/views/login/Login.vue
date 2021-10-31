@@ -1,81 +1,153 @@
 <template>
+<div>
+
+  <div>
+    <a-menu v-model="current" mode="horizontal" style="text-align: right">
+      <a-menu-item key="home">
+        <router-link to="/">
+        首页
+        </router-link>
+      </a-menu-item>
+
+      <a-menu-item key="about">
+        <router-link to="/">
+        关于
+        </router-link>
+      </a-menu-item>
+
+      <a-menu-item key="login">
+        <router-link to="/login">
+        登录
+        </router-link>
+      </a-menu-item>
+      
+      <a-menu-item key="register">
+        <router-link to="/register">
+        注册
+        </router-link>
+      </a-menu-item>
+
+    <!--
+      <a-menu-item key="login">
+        <a href="/login" target="_blank" rel="noopener noreferrer">
+        登录
+        </a>
+      </a-menu-item>
+
+      <a-menu-item key="register">
+        <a href="/register" target="_blank" rel="noopener noreferrer">
+        注册
+        </a>
+      </a-menu-item>
+    -->
+
+    </a-menu>
+  </div>
+
   <div id="login-container">
-    <div style="text-align: center;height: 50px">
-      登录
-    </div>
-    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+    <div class="ms-title">登录</div>
+
+    <el-form :model="loginParam" status-icon :rules="rules" ref="loginParam" label-width="100px" class="demo-ruleForm">
       <el-form-item label="账号" prop="user">
-        <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
+        <el-input type="text" v-model="loginParam.username" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+        <el-input type="password" v-model="loginParam.password" autocomplete="off" show-password></el-input>
       </el-form-item>
-<!--      <el-form-item label="年龄" prop="age">-->
-<!--        <el-input v-model.number="ruleForm.age"></el-input>-->
-<!--      </el-form-item>-->
+
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+        <el-button type="primary" @click="submitForm('loginParam')">提交</el-button>
+        <el-button @click="gotoReg()">注册</el-button>
       </el-form-item>
     </el-form>
   </div>
+</div>
 </template>
 
 <script>
   // import axios from 'axios'
   export default {
     name: "login",
-  data() {
-    var validatePass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入账户'));
-      } else {
-        if (this.ruleForm.pass !== '') {
-          this.$refs.ruleForm.validateField('pass');
-        }
-        callback();
-      }
-    };
-    var validatePass2 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入密码'));
-      } else {
-        callback();
-      }
-    };
-    return {
-      ruleForm: {
-        user: '',
-        pass: '',
-      },
-      rules: {
-        user: [
-          { validator: validatePass, trigger: 'blur' }
-        ],
-        pass: [
-          { validator: validatePass2, trigger: 'blur' }
-        ],
-        // age: [
-        //   { validator: checkAge, trigger: 'blur' }
-        // ]
-      },
-      isLogin:false
-    };
-  },
-  methods: {
-    submitForm(formName) {
 
-      this.$message.success("登录成功!!!");
-      this.$router.push({path: "/"});
+    data() {
+      return {
+        loginParam: {
+          user: '',
+          pass: '',
+        },
+        rules: {
+          username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+          password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        },
+      };
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+
+    methods: {
+      submitForm(formName) {
+
+        var post_request = new FormData()
+        post_request.append('userName', this.loginParam.username)
+        post_request.append('password', this.loginParam.password)
+        this.$http
+        .request({
+          url: this.$url + '/login_backend',
+          method: 'post',
+          data: post_request,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((response) =>{
+          console.log(response)
+          // if(response.data.login.retCode == 1){  //这行在最后需要代替下面的 if true
+          // eslint-disable-next-line no-constant-condition
+          if(response.data.login.retCode == 1){
+            alert('登陆成功');
+                  /*
+                  this.$message({
+                      showClose: true,
+                      message:'登录成功'
+                  })
+                  */
+            localStorage.setItem("ms_username", this.loginParam.username)
+            this.$router.push('/SchoolIndex');
+          }
+          else if(response.data.login.retCode == 2) {
+                  /*_this.$message({
+                      message: response.data.login.message,
+                      type: 'error',
+                  });
+                  */
+            alert('密码错误！');
+            return false
+            }
+          else {
+                  /*
+                  _this.$message({
+                      message: response.data.login.message + "！请先注册",
+                      type: 'warning',
+                  });*/
+            alert('用户不存在，请先注册！');
+            return false
+          }
+        })
+        .catch((response) => {
+          console.log(response)
+        });
+
+      },
+
+      gotoReg() {
+        this.$router.replace('/register');
+      }
+
     }
-  }
   }
 </script>
 
 <style scoped>
+  .ms-title {
+    text-align: center;
+    height: 50px;
+  }
   body{
     margin: 0;
   }
