@@ -56,7 +56,7 @@ def create_user(username, passwd):
         info = 'OK'
         return True, info
     except:
-        return False, "Unknown Error"
+        return False, "User Already Exists or Unknown Error"
 
 def check_password(username, passwd):
     try:
