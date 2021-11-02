@@ -45,7 +45,7 @@ def process(document,requirements):
     # if len(sys.argv) > 1:
     #     config = sys.argv[1]
     config = requirements
-    filename = "temp"
+    filename = "temp_work"
     document.save(filename+".docx")
     shutil.copyfile(filename + '.docx', filename + '.zip')
     unzip_file(filename + '.zip', filename)

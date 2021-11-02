@@ -1,3 +1,4 @@
+from .process import process
 def formatter(document, requirements):
     # print("OK")
     for requirement in requirements:
