@@ -63,6 +63,7 @@ def upload_doc():
 @bp.route('/run_formatter', methods=['POST'])
 @login_required
 def run_formatter():
+    
     file_names = literal_eval(request.form['file_names'])
     requirements = get_reqs(request.form)
     formatted_names = []
@@ -80,13 +81,14 @@ def run_formatter():
             raw_doc = docx.Document(os.path.join('./temp/', file_name))
             try:
                 formatted_doc = formatter(raw_doc, requirements)
+                formatted_name = 'formatted_' + file_name
+                formatted_doc.save(os.path.join('./temp/', formatted_name))
+                formatted_names.append(formatted_name)
             except:
                 error = '文件格式转换失败: ' + file_name if error is None else error + ', ' + file_name
                 jsondata['state'] = 2
                 jsondata['info'] = error
-            formatted_name = 'formatted_' + file_name
-            formatted_doc.save(os.path.join('./temp/', formatted_name))
-            formatted_names.append(formatted_name)
+
         jsondata['formatted_names'] = formatted_names
 
     # flash(error)
@@ -97,7 +99,14 @@ def check_file_permission(file_names):
     return None
     
 def get_reqs(form):
-    return [{}, {}]
+    # just for test
+    return [
+        {"src_str":"用户","src_typeface":"等线","src_size":16,"src_color":"000000",
+        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"},
+
+        {"src_str":"图","src_typeface":"","src_size":0,"src_color":"",
+        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"}]
+    # return [{}, {}]
 
 def del_temp_files(file_paths):
     pass
