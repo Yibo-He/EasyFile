@@ -105,7 +105,7 @@ def get_reqs(form):
         "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"},
 
         {"src_str":"图","src_typeface":"","src_size":0,"src_color":"",
-        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"}]
+        "dst_str":"什么","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"}]
     # return [{}, {}]
 
 def del_temp_files(file_paths):
