@@ -76,29 +76,28 @@
     methods: {
       registerForm() {
         var post_request = new FormData()
-        post_request.append('userName', this.param.username)
+        post_request.append('username', this.param.username)
         post_request.append('password', this.param.password)
         post_request.append('email', this.param.email)
         let _this = this;
-        this.$http
-        .request({
-          url: this.$url + '/register_backend',
-          method: 'post',
-          data: post_request,
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
+        this.$axios
+        .post("http://localhost:5000/auth/register",
+          post_request,
+          {headers:{'Content-Type':'application/x-www-form-urlencoded' }})
         .then((response) => {
           console.log(response)
-          if(response.data.register.retCode == 1){
-            _this.$message({
-              message: response.data.register.message + "！请登录",
-              type: 'success',
-            });
-            _this.$router.push('/SignIn');
+          if(response.data.state == 0){
+              alert('注册成功');
+              _this.$message({
+                message: response.data.info + "！请登录",
+                type: 'success',
+              });
+              _this.$router.push('/login');
             }
             else {
+              alert(response.data.info);
               _this.$message({
-                message: response.data.register.message,
+                message: response.data.info,
                 type: 'error',
               });
             }

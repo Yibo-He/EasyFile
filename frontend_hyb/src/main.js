@@ -7,6 +7,9 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
 import VueParticles from 'vue-particles'
+import axios from 'axios'
+Vue.prototype.$axios = axios
+
 Vue.use(VueParticles)
 Vue.use(ElementUI);
 
