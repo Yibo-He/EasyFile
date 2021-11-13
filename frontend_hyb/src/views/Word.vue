@@ -72,6 +72,20 @@
 </template>
 
 <script>
+  export default {
+    name: "word",
+    data(){
+      return {
+
+      };
+    },
+
+    methods:{
+      download(){
+        
+      }
+    }
+  }
 
 </script>
 
