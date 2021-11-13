@@ -15,16 +15,16 @@
       </el-header>
       <el-main>
         <el-row>
+            <el-button round style="width:35%;margin-bottom:15px;" @click="route2word">Word处理</el-button>
             <br /><br />
-            <el-button round size="medium" @click="route2word">Word处理</el-button>
+            <el-button round style="width:35%;margin-bottom:15px;" @click="route2pdf">Pdf处理</el-button>
             <br /><br />
-            <el-button round size="medium" @click="route2pdf">Pdf处理</el-button>
-            <br /><br />
-            <el-button round size="medium">待开发</el-button>
-            <br /><br />
+            <el-button round style="width:35%;margin-bottom:15px;">待开发</el-button>
         </el-row>
       </el-main>
-      <el-footer>Copyright &copy; 软件工程 - 2021. All rights reserved</el-footer>
+      <el-footer>
+        Copyright &copy; 软件工程 - 2021. All rights reserved
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -44,7 +44,7 @@
     route2register(){
       this.$router.push('/register')
     },
-    /*route2help(){
+    route2help(){
       this.$router.push('/help')
     },
     route2word(){
@@ -52,7 +52,7 @@
     },
     route2pdf(){
       this.$router.push('/pdf')
-    }*/
+    }
   }
   }
 </script>
@@ -64,7 +64,7 @@
 }
 
 .title {
-  background-color: #1ec1988c;
+  background-color: #67bff1;
   width: 150px;
   padding-left: 30px;
 }
@@ -91,7 +91,7 @@
 }
 
 .el-footer { 
-  background-color: #e6eeeb;
+  background-color: #67bff1;
   color: #070707;
   text-align: center;
   line-height: 60px;
@@ -99,6 +99,8 @@
 
 .el-main {
   color: rgb(7, 7, 7);
+  min-height: calc(100vh - 130px);
   text-align: center;
+  margin: 100px 20px; 
 }
 </style>
