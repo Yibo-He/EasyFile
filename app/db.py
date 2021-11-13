@@ -2,6 +2,7 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 import pymysql
+# from pymysql import cursors
 
 def init_app(app):
     app.teardown_appcontext(close_db)
@@ -45,6 +46,19 @@ def init_db():
             )engine=innodb default charset=utf8;
         """
     cursor.execute(sql)
+    
+    sql = """drop table if exists File"""
+    cursor.execute(sql)
+    sql = """
+        create table File(
+            id int primary key auto_increment,
+            title varchar(255) not null,
+            uid varchar(255),
+            user_idx int not null
+            )engine=innodb default charset=utf8;
+        """
+    cursor.execute(sql)
+
 
 def create_user(username, passwd):
     try:
@@ -84,8 +98,27 @@ def check_password(username, passwd):
         }
         return False, info
       
-def get_user_docID(user_id):
-    return 0
-
-def update_docID(user_id, new_docID):
-    pass
+def allocate_docID(uid, filename):
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        print("uid=", uid)
+        uid = str(uid)
+        sql = f'select count(*) from File where uid="{uid}"'
+        print(sql)
+        cursor.execute(sql)
+        f = cursor.fetchall()
+        print(f)
+        cnt = f[0][0]
+        print(cnt)
+        sql = f'insert into File(title, uid, user_idx) values("{filename}", "{uid}", "{cnt}")'
+        cursor.execute(sql)
+        db.commit()
+        # res = cursor.fetchall()
+        info = {
+                "idx": cnt,
+                "info": 'OK'
+        }
+        return True, info
+    except:
+        return False, {"idx": -1, "info": "Unknown Error"}
