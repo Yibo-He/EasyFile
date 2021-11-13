@@ -3,14 +3,14 @@ from ast import literal_eval
 from app.tools.formatter import formatter
 import docx
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
+    Blueprint, flash, g, json, redirect, render_template, request, session, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 
 from .auth import login_required
-from ..db import get_db, get_user_docID, update_docID
+from ..db import get_db, allocate_docID
 from ..tools.formatter import formatter
-
+from flask import send_from_directory, current_app
 
 bp = Blueprint('doc_formatter', __name__)
 
@@ -27,77 +27,118 @@ def index():
 @login_required
 def upload_doc():
     files_dict = request.files
-    docID = get_user_docID(session.get('user_id'))
-    jsondata = {'state': 0, 'info':'success', 'filenames':[] }  # to mark the state
-
-    file_names = []
+    print(files_dict)
+    # for i, j in files_dict.items():
+    #     print(i, j)
+    
+    file_template = {'state': 0, 'info':'success', 'filename':"invalid"}  # to mark the state
+    jsondata = []
     error = None
-
     if files_dict is None:
-        error = '未上传文件'
-        jsondata['state'] = 1
-        jsondata['info'] = error
+        error = 'No files uploaded'
+        file_info = file_template.copy()
+        file_info['state'] = 1
+        file_info['info'] = error
+        jsondata.append(file_info)
         return jsonify(jsondata)
 
     if error is None:
         for file_obj in files_dict.values():
-            file_name = str(session.get('user_id')) + '&' +  str(docID) + '&' + file_obj.filename
-            file_path = os.path.join('./temp/', file_name)
-            try:
-                file_obj.save(file_path)
-            except:
-                error = '文件上传失败: ' + file_obj.filename if error is None else error + ', ' + file_obj.filename
-                jsondata['state'] = 2
-                jsondata['info'] = error
-            file_names.append(file_path)
-            docID = docID + 1
-        jsondata['filenames'] = file_names
-
-    # flash(error)
-    update_docID(session.get('user_id'), docID)
-
-    # return jsonify(file_names)
+            print(file_obj)
+            file_info = file_template.copy()
+            status, info = allocate_docID(session.get('user_id'), file_obj.filename)
+            if status == True:
+                try:
+                    docID = info["idx"]
+                    file_name = str(session.get('user_id')) + '&' +  str(docID) + '&' + file_obj.filename
+                    file_path = os.path.join('./temp/', file_name)
+                    file_obj.save(file_path)
+                    file_info["filename"] = file_name
+                except:
+                    error = 'Uploading Error' 
+                    file_info['state'] = 2
+                    file_info['info'] = error
+            else:
+                error = 'Database Error'
+                file_info['state'] = 2
+                file_info['info'] = error
+            print(file_info)
+            jsondata.append(file_info)
+    
+    # all the succussfully uploaded files are labeled with state 0
     return jsonify(jsondata)
 
 
 @bp.route('/run_formatter', methods=['POST'])
 @login_required
 def run_formatter():
-    
     file_names = literal_eval(request.form['file_names'])
+    # print(type(file_names))
+    # print(file_names)
     requirements = get_reqs(request.form)
     formatted_names = []
-    jsondata = {'state': 0, 'info':'success', 'formatted_names':[] }  # to mark the state
-
-
+    jsondata = []
+    file_template = {'state': 0, 'info':'success', 'formatted_name':"invalid", 'original_name': "invalid"}
+    # jsondata = {'state': 0, 'info':'success', 'formatted_names':[] }  # to mark the state
     error = check_file_permission(file_names)
     if error is not None:
-        jsondata['state'] = 1
-        jsondata['info'] = error
+        file_info = file_template.copy()
+        file_info['state'] = 1
+        file_info['info'] = error
+        jsondata.append(file_info)
         return jsonify(jsondata)
-
     else:
         for file_name in file_names:
-            raw_doc = docx.Document(os.path.join('./temp/', file_name))
+            file_info = file_template.copy()
+            file_info['original_name'] = file_name
+            try:
+                raw_doc = docx.Document(os.path.join('./temp/', file_name))
+            except:
+                error = 'No such file: ' + file_name
+                file_info['state'] = 3
+                file_info['info'] = "File not found"
+                jsondata.append(file_info)
+                continue
             try:
                 formatted_doc = formatter(raw_doc, requirements)
                 formatted_name = 'formatted_' + file_name
                 formatted_doc.save(os.path.join('./temp/', formatted_name))
-                formatted_names.append(formatted_name)
+                file_info['formatted_names'] = formatted_name
             except:
-                error = '文件格式转换失败: ' + file_name if error is None else error + ', ' + file_name
-                jsondata['state'] = 2
-                jsondata['info'] = error
-
-        jsondata['formatted_names'] = formatted_names
-
+                error = 'failed to transform the file: ' + file_name
+                file_info['state'] = 2
+                file_info['info'] = error
+            jsondata.append(file_info)
+          # only successful files
     # flash(error)
     # return jsonify(formatted_names)
     return jsonify(jsondata)
 
-def check_file_permission(file_names):
+@bp.route('/download/<filename>', methods=['GET'])
+@login_required
+def download_doc(filename):
+
+    # jsondata = {'state': 0, 'info':'success'}  # to mark the state
+    error = check_formatted_file_permission(filename)
+    if error is None:
+        return send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True)
     return None
-    
+
+def check_formatted_file_permission(filename):
+
+    if str(session.get('user_id')) != filename.split("&")[0].split('_')[-1]:
+        return "Permission denied"
+    return None
+
+
+def check_file_permission(file_names):
+    for fn in file_names:
+        if str(session.get('user_id')) != fn.split("&")[0]:
+            # print(str(session.get("user_id")), fn)
+            return "Permission denied"
+    #else:
+    return None
+
 def get_reqs(form):
     # just for test
     return [
@@ -105,7 +146,10 @@ def get_reqs(form):
         "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"},
 
         {"src_str":"图","src_typeface":"","src_size":0,"src_color":"",
-        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"}]
+        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"},
+        
+        {"src_str":'”',"src_typeface":"","src_size":16,"src_color":"",
+        "dst_str":'”',"dst_typeface":"宋体","dst_size":16,"dst_color":"000000"}]
     # return [{}, {}]
 
 def del_temp_files(file_paths):
