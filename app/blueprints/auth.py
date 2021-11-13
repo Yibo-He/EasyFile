@@ -12,6 +12,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
+    jsondata = {}
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -38,7 +39,7 @@ def register():
                 jsondata['info'] = info
                 
 
-        return jsonify(jsondata)
+    return jsonify(jsondata)
             # if result:
             #     return redirect(url_for("auth.login"))
             # error = info
@@ -47,6 +48,7 @@ def register():
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
+    jsondata = {}
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']

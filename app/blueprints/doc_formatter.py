@@ -10,7 +10,7 @@ from werkzeug.exceptions import abort
 from .auth import login_required
 from ..db import get_db, allocate_docID
 from ..tools.formatter import formatter
-
+from flask import send_from_directory, current_app
 
 bp = Blueprint('doc_formatter', __name__)
 
@@ -114,6 +114,23 @@ def run_formatter():
     # return jsonify(formatted_names)
     return jsonify(jsondata)
 
+@bp.route('/download/<filename>', methods=['GET'])
+@login_required
+def download_doc(filename):
+
+    # jsondata = {'state': 0, 'info':'success'}  # to mark the state
+    error = check_formatted_file_permission(filename)
+    if error is None:
+        return send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True)
+    return None
+
+def check_formatted_file_permission(filename):
+
+    if str(session.get('user_id')) != filename.split("&")[0].split('_')[-1]:
+        return "Permission denied"
+    return None
+
+
 def check_file_permission(file_names):
     for fn in file_names:
         if str(session.get('user_id')) != fn.split("&")[0]:
@@ -129,7 +146,10 @@ def get_reqs(form):
         "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"},
 
         {"src_str":"图","src_typeface":"","src_size":0,"src_color":"",
-        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"}]
+        "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"},
+        
+        {"src_str":'”',"src_typeface":"","src_size":16,"src_color":"",
+        "dst_str":'”',"dst_typeface":"宋体","dst_size":16,"dst_color":"000000"}]
     # return [{}, {}]
 
 def del_temp_files(file_paths):
