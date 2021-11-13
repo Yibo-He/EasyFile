@@ -111,13 +111,12 @@ export default {
     },
 
     methods: {
-      submitForm(formName) {
-
-        var post_request = new FormData()
-        post_request.append('username', this.loginParam.username)
-        post_request.append('password', this.loginParam.password)
-        //document.write('line 91')
-        /*
+        submitForm(formName) {
+            var post_request = new FormData();
+            post_request.append("username", this.loginParam.username);
+            post_request.append("password", this.loginParam.password);
+            //document.write('line 91')
+            /*
         this.$http
         .request({
           //url: this.$url + '/login_backend',
@@ -128,70 +127,38 @@ export default {
         })
         */
 
-        this.$axios
-        .post("http://localhost:5000/auth/login",
-          post_request,
-          {headers:{'Content-Type':'application/x-www-form-urlencoded' }})
-        .then((response) =>{
-          //document.write('line 107')
-          console.log(response)
-          // if(response.data.login.retCode == 1){  //这行在最后需要代替下面的 if true
-          // eslint-disable-next-line no-constant-condition
-          if(response.data.state == 0){
-            alert('登陆成功');
-                  /*
+            this.$axios
+                .post("http://localhost:5000/auth/login", post_request, {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                })
+                .then((response) => {
+                    //document.write('line 107')
+                    console.log(response);
+                    // if(response.data.login.retCode == 1){  //这行在最后需要代替下面的 if true
+                    // eslint-disable-next-line no-constant-condition
+                    if (response.data.state == 0) {
+                        alert("登陆成功");
+                        /*
                   this.$message({
                       showClose: true,
                       message:'登录成功'
                   })
                   */
-<<<<<<< HEAD:frontend_hyb/src/views/login/Login.vue
                         localStorage.setItem(
                             "ms_username",
                             this.loginParam.username
                         );
                         this.$router.push("/SchoolIndex");
-                    } else if (response.data.login.retCode == 2) {
-                        /*_this.$message({
-                      message: response.data.login.message,
-                      type: 'error',
-                  });
-                  */
-                        alert("密码错误！");
-                        return false;
                     } else {
-                        /*
-                  _this.$message({
-                      message: response.data.login.message + "！请先注册",
-                      type: 'warning',
-                  });*/
-                        alert("用户不存在，请先注册！");
-                        return false;
+                        alert("登陆失败");
                     }
                 })
                 .catch((response) => {
                     console.log(response);
                 });
         },
-=======
-            localStorage.setItem("ms_username", this.loginParam.username);
-            this.$router.push('/SchoolIndex')
-          }
-          else{
-            alert('登陆失败');
-          }
-
-        })
-        .catch((response) => {
-          console.log(response)
-        });
-
-      },
-
-      gotoReg() {
-        this.$router.replace('/register');
-      }
->>>>>>> a890564ec566b9b8c9b632d6cf33d9b1ff57db43:frontend_hyb/src/views/Login.vue
 
         gotoReg() {
             this.$router.replace("/register");
