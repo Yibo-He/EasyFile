@@ -10,7 +10,7 @@ from werkzeug.exceptions import abort
 from .auth import login_required
 from ..db import get_db, allocate_docID
 from ..tools.formatter import formatter
-
+from flask import send_from_directory, current_app
 
 bp = Blueprint('doc_formatter', __name__)
 
@@ -113,6 +113,23 @@ def run_formatter():
     # flash(error)
     # return jsonify(formatted_names)
     return jsonify(jsondata)
+
+@bp.route('/download/<filename>', methods=['GET'])
+@login_required
+def download_doc(filename):
+
+    # jsondata = {'state': 0, 'info':'success'}  # to mark the state
+    error = check_formatted_file_permission(filename)
+    if error is None:
+        return send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True)
+    return None
+
+def check_formatted_file_permission(filename):
+
+    if str(session.get('user_id')) != filename.split("&")[0].split('_')[-1]:
+        return "Permission denied"
+    return None
+
 
 def check_file_permission(file_names):
     for fn in file_names:

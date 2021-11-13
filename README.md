@@ -11,6 +11,7 @@ DATABASE = {
     'passwd': 'my_pass_word_for_mysql',
     'db': 'the_database_to_use'
 }
+TEMP_PATH = r'D:\Downloads\EasyFile\temp'
 ```
 
 1. run `flask init-db` to create tables
