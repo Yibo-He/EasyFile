@@ -15,16 +15,11 @@
       </el-header>
       <el-main>
         <el-row>
-            <br /><br />
-            <br /><br />
-            <br /><br />
-            <br /><br />
             <el-button round style="width:35%;margin-bottom:15px;" @click="route2word">Word处理</el-button>
             <br /><br />
             <el-button round style="width:35%;margin-bottom:15px;" @click="route2pdf">Pdf处理</el-button>
             <br /><br />
             <el-button round style="width:35%;margin-bottom:15px;">待开发</el-button>
-            <br /><br />
         </el-row>
       </el-main>
       <el-footer>
@@ -106,5 +101,6 @@
   color: rgb(7, 7, 7);
   min-height: calc(100vh - 130px);
   text-align: center;
+  margin: 100px 20px; 
 }
 </style>
