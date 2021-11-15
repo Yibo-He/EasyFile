@@ -64,7 +64,7 @@ def upload_doc():
                 file_info['info'] = error
             print(file_info)
             jsondata.append(file_info)
-    
+    print(jsondata)
     # all the succussfully uploaded files are labeled with state 0
     return jsonify(jsondata)
 
@@ -72,7 +72,9 @@ def upload_doc():
 @bp.route('/run_formatter', methods=['POST'])
 @login_required
 def run_formatter():
-    file_names = literal_eval(request.form['file_names'])
+    # file_names = literal_eval(request.form['file_names'])
+    file_names = request.form['file_names'].split(',')
+    print(file_names)
     # print(type(file_names))
     # print(file_names)
     requirements = get_reqs(request.form)
@@ -103,7 +105,7 @@ def run_formatter():
                 formatted_doc = formatter(raw_doc, requirements)
                 formatted_name = 'formatted_' + file_name
                 formatted_doc.save(os.path.join('./temp/', formatted_name))
-                file_info['formatted_names'] = formatted_name
+                file_info['formatted_name'] = formatted_name
             except:
                 error = 'failed to transform the file: ' + file_name
                 file_info['state'] = 2

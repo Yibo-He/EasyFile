@@ -22,13 +22,15 @@
     -->
     <el-main>
       <el-row >
-
+  
       <el-col :span="8" style="padding-top: 100px">
       <el-upload
         class="upload-demo"
         drag
-        action="https://jsonplaceholder.typicode.com/posts/"
-        multiple>
+        action="http://localhost:5000/upload_doc"
+        multiple
+        :on-success="save_fnames"
+        :with-credentials='true'>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">注意: 只能上传doc/docx文件</div>
@@ -136,6 +138,7 @@
         color_after: '',
         font_style_after: '',
         font_size_after: '',
+        fname_list: [],  //denote the files to be processed
 
         options_color: [{
           value: '0',
@@ -225,6 +228,44 @@
       },
       download(){
         
+      },
+      save_fnames(response){
+        console.log(response)
+        for(var i=0; i<response.length; i++){
+          if(response[i].state == 0){
+            this.fname_list.push(response[i].filename)
+            console.log(this.fname_list)
+            //console.log('['+this.fname_list.join(',')+']')
+          }
+          else{
+            alert(response[i].info)
+          }
+        }
+      },
+      start(){
+        //console.log('line 245');
+        var post_request = new FormData();
+        post_request.append("file_names", this.fname_list.join(','));
+        //TODO: add requirements
+        let _this = this;
+        this.$axios
+            .post("http://localhost:5000/run_formatter", post_request, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
+            .then((response) => {
+                //console.log('line 256');
+                console.log(response);
+                for(var i=0;i<response.data.length;i++){
+                  this.$message({
+                    message: response.data[i].info+'\torigin_name:'+response.data[i].original_name+'\tformatted_name:'+response.data[i].formatted_name,
+                  });
+                }
+            })
+            .catch((response) => {
+                console.log(response);
+            });
       }
     }
   }

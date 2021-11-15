@@ -150,7 +150,7 @@ export default {
                             "ms_username",
                             this.loginParam.username
                         );
-                        this.$router.push("/SchoolIndex");
+                        this.$router.push("/home");
                     } else {
                         alert("登陆失败");
                     }
