@@ -22,13 +22,15 @@
     -->
     <el-main>
       <el-row >
-
+  
       <el-col :span="8" style="padding-top: 100px">
       <el-upload
         class="upload-demo"
         drag
-        action="https://jsonplaceholder.typicode.com/posts/"
-        multiple>
+        action="http://localhost:5000/upload_doc"
+        multiple
+        :on-success="save_fnames"
+        :with-credentials='true'>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">注意: 只能上传doc/docx文件</div>
@@ -106,12 +108,11 @@
 
         <br />
         <el-button type="primary" @click="start">开始处理</el-button>
+        <div>&emsp;</div>
+        <el-button type="primary" icon="el-icon-download" round size="medium" @click="download">下载处理后文件</el-button>
       </el-col>
 
       </el-row>
-
-      <br /><br />
-      <el-button type="primary" icon="el-icon-download" round size="medium" @click="download">下载处理后文件</el-button>
 
     </el-main>
 
@@ -136,69 +137,71 @@
         color_after: '',
         font_style_after: '',
         font_size_after: '',
+        fname_list: [],  //denote the files to be processed
+        formatted_fname_list: [],  //denote the processed files
 
         options_color: [{
-          value: '0',
+          value: '',
           label: '-(所有)'
         }, {
-          value: '1',
+          value: '000000',
           label: '黑色'
         }, {
-          value: '2',
+          value: 'ff0000',
           label: '红色'
         }, {
-          value: '3',
+          value: '00ff00',
           label: '绿色'
         }, {
-          value: '4',
+          value: '0000ff',
           label: '蓝色'
         },{
-          value: '5',
+          value: 'ffff00',
           label: '黄色'
         },{
-          value: '6',
+          value: 'ffffff',
           label: '白色'
         }],
 
         options_font_style: [{
-          value: '0',
+          value: '',
           label: '-(所有)'
         }, {
-          value: '1',
+          value: '宋体',
           label: '宋体'
         }, {
-          value: '2',
+          value: '黑体',
           label: '黑体'
         }, {
-          value: '3',
+          value: '等线',
           label: '等线'
         }, {
-          value: '4',
+          value: '楷体',
           label: '楷体'
         },{
-          value: '5',
+          value: 'Times New Roman',
           label: 'Times New Roman'
         },{
-          value: '6',
+          value: '微软雅黑',
           label: '微软雅黑'
         }],
 
         options_size: [
-        {value: '0', label: '-(所有)'}
-        ,{ value: '1', label: '初号'}
-        ,{ value: '2', label: '小初'}
-        ,{ value: '3', label: '一号'}
-        ,{ value: '4', label: '小一'}
-        ,{ value: '5', label: '二号'}
-        ,{ value: '6', label: '小二'}
-        ,{ value: '7', label: '三号'}
-        ,{ value: '8', label: '小三'}
-        ,{ value: '9', label: '四号'}
-        ,{ value: '10', label: '小四'}
-        ,{ value: '11', label: '五号'}
-        ,{ value: '12', label: '小五'}
-        ,{ value: '13', label: '六号'}
-        ,{ value: '14', label: '小六'}
+        {value: 0, label: '-(所有)'}
+        ,{ value: 42, label: '初号'}
+        ,{ value: 36, label: '小初'}
+        ,{ value: 26, label: '一号'}
+        ,{ value: 24, label: '小一'}
+        ,{ value: 22, label: '二号'}
+        ,{ value: 18, label: '小二'}
+        ,{ value: 16, label: '三号'}
+        ,{ value: 15, label: '小三'}
+        ,{ value: 14, label: '四号'}
+        ,{ value: 12, label: '小四'}
+        ,{ value: 10.5, label: '五号'}
+        ,{ value: 9, label: '小五'}
+        ,{ value: 7.5, label: '六号'}
+        ,{ value: 6.5, label: '小六'}
         ],
 
       };
@@ -224,7 +227,80 @@
         this.$router.replace('/pdf')
       },
       download(){
-        
+        //console.log('line 230')
+        //console.log(this.formatted_fname_list)
+        for(var i=0;i<this.formatted_fname_list.length;i++){
+          console.log(this.formatted_fname_list[i])
+          this.$axios.get("http://localhost:5000/download/"+this.formatted_fname_list[i],
+          { responseType: 'blob' })
+          .then((response) => {
+            if (!response) {
+              return
+            }
+          const filename = this.formatted_fname_list[i]
+          const url = window.URL.createObjectURL(response.data)
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = url
+          link.setAttribute('download', filename)
+          document.body.appendChild(link)
+          link.click()
+        }).catch()
+
+        this.formatted_fname_list = []
+        }
+      },
+
+      save_fnames(response){
+        console.log(response)
+        for(var i=0; i<response.length; i++){
+          if(response[i].state == 0){
+            this.fname_list.push(response[i].filename)
+            console.log(this.fname_list)
+            //console.log('['+this.fname_list.join(',')+']')
+          }
+          else{
+            alert(response[i].info)
+          }
+        }
+      },
+      start(){
+        //console.log('line 245');
+        var post_request = new FormData();
+        post_request.append("file_names", this.fname_list.join(','));
+
+        post_request.append("src_str", this.string_before);
+        post_request.append("src_typeface", this.font_style_before);
+        post_request.append("src_size", this.font_size_before);
+        post_request.append("src_color", this.color_before);
+        post_request.append("dst_str", this.string_after);
+        post_request.append("dst_typeface", this.font_style_after);
+        post_request.append("dst_size", this.font_size_after);
+        post_request.append("dst_color", this.color_after);
+
+        //TODO: add requirements
+        let _this = this;
+        this.$axios
+            .post("http://localhost:5000/run_formatter", post_request, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
+            .then((response) => {
+                //console.log('line 256');
+                console.log(response);
+                for(var i=0;i<response.data.length;i++){
+                  /*this.$message({
+                    message: response.data[i].info+'\torigin_name:'+response.data[i].original_name+'\tformatted_name:'+response.data[i].formatted_name,
+                  });*/
+                  this.formatted_fname_list.push(response.data[i].formatted_name)
+                  this.$message({message: '处理完成！'});
+                }
+                this.fname_list = [] 
+            })
+            .catch((response) => {
+                console.log(response);
+            });
       }
     }
   }

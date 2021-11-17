@@ -3,6 +3,7 @@ from docx.shared import Pt, RGBColor
 from . import runtools
 from .myfont import Font
 from .myfont import RepStr
+from docx.oxml.ns import qn
 
 
 def get_typeface(run, paragraph, default):
@@ -92,41 +93,8 @@ def check(old: RepStr, now: RepStr):
     return True
 
 
-def replace_char(document, default, old, new):
-    for para in document.paragraphs:
-        for run in para.runs:
-            if (len(run.text) > 1):
-                t = range(len(run.text))
-                runtools.split_run_by(para, run, t)
-    myruns = []
-    for para in document.paragraphs:
-        for run in para.runs:
-            myruns.append(run)
-
-    for para in document.paragraphs:
-        for i, run in enumerate(para.runs):
-            nowfont = get_font(run, para, default)
-            # print(run.text)
-            if (len(run.text) > 1):
-                t = range(len(run.text))
-                ret = runtools.split_run_by(para, run, t)
-            for j, x in enumerate(run.text):
-                if check(old, RepStr(x, nowfont.color, nowfont.name, nowfont.size)):
-                    lst = list(para.runs[i].text)
-                    lst[j] = new.str[0]
-                    run.text = "".join(lst)
-                    run.font.color.rgb = RGBColor.from_string(new.font.color)
-                    # print(new.font.name)
-                    run.font.name = new.font.name
-                    run.font.size = Pt(new.font.size)
-    return
-
 
 def replace(document, default, old, new):
-    if len(old.str) < 2:
-        replace_char(document, default, old, new)
-        return
-
     for para in document.paragraphs:
         for run in para.runs:
             if (len(run.text) > 1):
@@ -162,6 +130,7 @@ def replace(document, default, old, new):
             # print(new.font.name)
             run.font.name = new.font.name
             run.font.size = Pt(new.font.size)
+            run._element.rPr.rFonts.set(qn('w:eastAsia'),new.font.name)
             for j in range(1, len(old.str)):
                 myruns[i + j][0].text = ""
     return

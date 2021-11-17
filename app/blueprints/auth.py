@@ -12,6 +12,8 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
+    print('line 15')
+    print(session.get('user_id'))
     jsondata = {}
     if request.method == 'POST':
         username = request.form['username']
