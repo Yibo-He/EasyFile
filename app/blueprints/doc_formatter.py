@@ -10,7 +10,7 @@ from werkzeug.exceptions import abort
 from .auth import login_required
 from ..db import get_db, allocate_docID
 from ..tools.formatter import formatter
-from flask import send_from_directory, current_app
+from flask import send_from_directory, current_app, make_response
 
 bp = Blueprint('doc_formatter', __name__)
 
@@ -78,6 +78,7 @@ def run_formatter():
     # print(type(file_names))
     # print(file_names)
     requirements = get_reqs(request.form)
+    print(requirements)
     formatted_names = []
     jsondata = []
     file_template = {'state': 0, 'info':'success', 'formatted_name':"invalid", 'original_name': "invalid"}
@@ -114,16 +115,19 @@ def run_formatter():
           # only successful files
     # flash(error)
     # return jsonify(formatted_names)
+    print(jsondata)
     return jsonify(jsondata)
 
-@bp.route('/download/<filename>', methods=['GET'])
+@bp.route('/download/<filename>', methods=['GET','POST'])
 @login_required
 def download_doc(filename):
 
     # jsondata = {'state': 0, 'info':'success'}  # to mark the state
     error = check_formatted_file_permission(filename)
     if error is None:
-        return send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True)
+        response = make_response(send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True))
+        response.headers["Access-Control-Expose-Headers"] = "Content-disposition"
+        return response
     return None
 
 def check_formatted_file_permission(filename):
@@ -142,6 +146,15 @@ def check_file_permission(file_names):
     return None
 
 def get_reqs(form):
+    # return [
+    #     {"src_str":"用户","src_typeface":"等线","src_size":16,"src_color":"000000",
+    #     "dst_str":"我","dst_typeface":"宋体","dst_size":12,"dst_color":"66ccff"}]
+    req_dict = {}
+    for k,v in form.items():
+        if k != 'file_names':
+            req_dict[k] = v if k != 'src_size' and k!= 'dst_size' else float(v)
+    return [req_dict]
+    '''
     # just for test
     return [
         {"src_str":"用户","src_typeface":"等线","src_size":16,"src_color":"000000",
@@ -152,6 +165,7 @@ def get_reqs(form):
         
         {"src_str":'”',"src_typeface":"","src_size":16,"src_color":"",
         "dst_str":'”',"dst_typeface":"宋体","dst_size":16,"dst_color":"000000"}]
+    '''
     # return [{}, {}]
 
 def del_temp_files(file_paths):

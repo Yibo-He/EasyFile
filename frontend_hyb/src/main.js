@@ -8,6 +8,7 @@ import "element-ui/lib/theme-chalk/index.css";
 
 import VueParticles from "vue-particles";
 import axios from "axios";
+axios.defaults.withcredentials = true;
 Vue.prototype.$axios = axios;
 
 Vue.use(VueParticles);
