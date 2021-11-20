@@ -15,12 +15,20 @@
       </el-header>
       <el-main>
         <el-row>
-            <el-button round style="width:35%;margin-bottom:15px;" @click="route2word">Word处理</el-button>
-            <br /><br />
-            <el-button round style="width:35%;margin-bottom:15px;" @click="route2pdf">Pdf处理</el-button>
-            <br /><br />
-            <el-button round style="width:35%;margin-bottom:15px;">待开发</el-button>
+            <el-col :span="12">
+            <img src="../assets/Microsoft-Word-logo.jpg" style="width: 315px; margin: 20px">
+            <el-button round style="width:65%;padding:30px;margin-bottom:15px;color:#67bff1;" @click="route2word">Word处理</el-button>
+            </el-col>
+            
+            <el-col :span="12">
+              <img src="../assets/pdf-logo.jpeg" style="width: 300px; margin: 20px">
+            <el-button round style="width:65%;padding:30px;margin-bottom:15px;color:#eb3f3f;" @click="route2pdf">Pdf处理</el-button>
+            </el-col>
+            
         </el-row>
+
+        <br /><br />
+        <el-button round style="width:35%;margin-bottom:15px;width:300px;">待开发</el-button>
       </el-main>
       <el-footer>
         Copyright &copy; 软件工程 - 2021. All rights reserved
@@ -99,8 +107,8 @@
 
 .el-main {
   color: rgb(7, 7, 7);
-  min-height: calc(100vh - 130px);
+  min-height: calc(100vh - 320px);
   text-align: center;
-  margin: 100px 20px; 
+  margin: 20px 20px; 
 }
 </style>
