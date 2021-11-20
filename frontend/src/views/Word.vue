@@ -23,14 +23,15 @@
     <el-main>
       <el-row >
   
-      <el-col :span="8" style="padding-top: 100px">
+      <el-col :span="8" style="padding: 50px">
       <el-upload
         class="upload-demo"
         drag
         action="http://localhost:5000/upload_doc"
         multiple
         :on-success="save_fnames"
-        :with-credentials='true'>
+        :with-credentials='true'
+        style="background: rgba(128,128,128,.5); padding: 10px">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">注意: 只能上传doc/docx文件</div>
@@ -141,7 +142,7 @@
         formatted_fname_list: [],  //denote the processed files
 
         options_color: [{
-          value: '',
+          value: '_color',
           label: '-(所有)'
         }, {
           value: '000000',
@@ -164,7 +165,7 @@
         }],
 
         options_font_style: [{
-          value: '',
+          value: '_style',
           label: '-(所有)'
         }, {
           value: '宋体',
@@ -317,9 +318,9 @@
 
 .el-main {
   color: rgb(7, 7, 7);
+  min-height: calc(100vh - 320px);
   text-align: center;
-  margin: 20px 50px;
-  padding: 70px 50px;
+  margin: 100px 20px; 
 }
 
 </style>
