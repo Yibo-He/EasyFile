@@ -1,0 +1,5 @@
+pypdf2
+pymupdf
+fitz
+camelot-py
+opencv-python
