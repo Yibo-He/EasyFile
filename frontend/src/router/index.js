@@ -7,8 +7,8 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Word from '../views/Word.vue'
-/*import Help from '../views/Help.vue'
-import Pdf from '../views/Pdf.vue'*/
+import Help from '../views/Help.vue'
+import Pdf from '../views/Pdf.vue'
 
 Vue.use(VueRouter)
 Vue.use(Antd)
@@ -43,8 +43,7 @@ const routes = [
     path: '/word',
     name: 'Word',
     component: Word
-  },
-  /*{
+  },{
     path: '/help',
     name: 'Help',
     component: Help
@@ -53,7 +52,7 @@ const routes = [
     path: '/pdf',
     name: 'Pdf',
     component: Pdf
-  }*/
+  }
 ]
 
 const router = new VueRouter({
