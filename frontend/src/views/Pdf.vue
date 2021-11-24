@@ -163,7 +163,7 @@
         //TODO: add requirements
         let _this = this;
         this.$axios
-            .post("http://localhost:5000/run_pdf2chart", post_request, {
+            .post("http://localhost:5000/run_formatter", post_request, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },

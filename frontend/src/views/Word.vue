@@ -23,7 +23,7 @@
     <el-main>
       <el-row >
   
-      <el-col :span="8" style="padding-top: 100px">
+      <el-col :span="8" style="padding: 50px">
       <el-upload
         class="upload-demo"
         drag
