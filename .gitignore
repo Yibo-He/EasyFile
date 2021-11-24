@@ -6,3 +6,6 @@ __pycache__/
 instance/
 
 temp/
+
+frontend/node_modules
+

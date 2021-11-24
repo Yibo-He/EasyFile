@@ -2,6 +2,7 @@ import os
 from ast import literal_eval
 from app.tools.formatter import formatter
 import docx
+import PyPDF2
 from flask import (
     Blueprint, flash, g, json, redirect, render_template, request, session, url_for, jsonify
 )
@@ -10,6 +11,7 @@ from werkzeug.exceptions import abort
 from .auth import login_required
 from ..db import get_db, allocate_docID
 from ..tools.formatter import formatter
+from ..tools.pdf import pdf2chart, save_tables, process
 from flask import send_from_directory, current_app, make_response
 
 bp = Blueprint('doc_formatter', __name__)
@@ -117,6 +119,79 @@ def run_formatter():
     # return jsonify(formatted_names)
     print(jsondata)
     return jsonify(jsondata)
+
+@bp.route('/run_pdf2chart', methods=['POST'])
+@login_required
+def run_pdf2chart():
+    # file_names = literal_eval(request.form['file_names'])
+    file_names = request.form['file_names'].split(',')
+    print(file_names)
+    # print(type(file_names))
+    # print(file_names)
+    # pages = [int(x) for x in request.form['pages'].split(' ') if x!='']
+    # print(pages)
+    pages = request.form['src_pages']
+    chart_names = []
+    jsondata = []
+    file_template = {'state': 0, 'info':'success', 'chart_name':"invalid", 'original_name': "invalid"}
+    # jsondata = {'state': 0, 'info':'success', 'formatted_names':[] }  # to mark the state
+    error = check_file_permission(file_names)
+    if error is not None:
+        file_info = file_template.copy()
+        file_info['state'] = 1
+        file_info['info'] = error
+        jsondata.append(file_info)
+        return jsonify(jsondata)
+    else:
+        for file_name in file_names:
+            file_info = file_template.copy()
+            file_info['original_name'] = file_name
+            try:
+                # raw_doc = docx.Document(os.path.join('./temp/', file_name))
+                # print(os.getcwd())
+                document_path = os.path.join('./temp/', file_name)
+                # raw_doc = PyPDF2.PdfFileReader(open(r'D:\Downloads\EasyFile\temp\None&0&test.pdf','rb'))
+                # print(os.path.exists(document_path))
+                assert os.path.exists(document_path)
+                '''
+                with open(document_path,"rb") as f:
+                    print('line 153', document_path)
+                    raw_doc = PyPDF2.PdfFileReader(f)
+                '''
+                
+            except:
+                error = 'No such file: ' + file_name
+                file_info['state'] = 3
+                file_info['info'] = "File not found"
+                jsondata.append(file_info)
+                continue
+            try:
+            # formatted_doc = formatter(raw_doc, requirements)
+            # print('line 167')
+            # tables = pdf2chart(raw_doc, pages)
+            # tables = process(document_path, )
+            # print('line 169')
+                formatted_name = 'chart_' + os.path.splitext(file_name)[0] + '.zip'
+                save_path = os.path.join('./temp/', formatted_name)
+                ret = process(document_path,format='excel',ext='xlsx',rules=[pages])
+                with open(save_path,'wb') as f:
+                    f.write(ret)
+                # save_tables(tables, save_path)
+                # print('line 173')
+                file_info['formatted_name'] = formatted_name
+            
+            except:
+                error = 'failed to transform the file: ' + file_name
+                file_info['state'] = 2
+                file_info['info'] = error
+            
+            jsondata.append(file_info)
+          # only successful files
+    # flash(error)
+    # return jsonify(formatted_names)
+    print(jsondata)
+    return jsonify(jsondata)
+
 
 @bp.route('/download/<filename>', methods=['GET','POST'])
 @login_required

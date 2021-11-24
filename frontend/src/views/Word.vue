@@ -30,7 +30,8 @@
         action="http://localhost:5000/upload_doc"
         multiple
         :on-success="save_fnames"
-        :with-credentials='true'>
+        :with-credentials='true'
+        style="background: rgba(128,128,128,.5); padding: 10px">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">注意: 只能上传doc/docx文件</div>
@@ -141,7 +142,7 @@
         formatted_fname_list: [],  //denote the processed files
 
         options_color: [{
-          value: '',
+          value: '_color',
           label: '-(所有)'
         }, {
           value: '000000',
@@ -164,7 +165,7 @@
         }],
 
         options_font_style: [{
-          value: '',
+          value: '_style',
           label: '-(所有)'
         }, {
           value: '宋体',
@@ -268,14 +269,25 @@
         //console.log('line 245');
         var post_request = new FormData();
         post_request.append("file_names", this.fname_list.join(','));
-
         post_request.append("src_str", this.string_before);
+        if(this.font_style_before=="_style"){
+            this.font_style_before = ""
+        }
         post_request.append("src_typeface", this.font_style_before);
         post_request.append("src_size", this.font_size_before);
+        if(this.color_before=="_color"){
+            this.color_before = ""
+        }
         post_request.append("src_color", this.color_before);
         post_request.append("dst_str", this.string_after);
+        if(this.font_style_after=="_style"){
+            this.font_style_after = ""
+        }
         post_request.append("dst_typeface", this.font_style_after);
         post_request.append("dst_size", this.font_size_after);
+        if(this.color_after=="_color"){
+            this.color_after = ""
+        }
         post_request.append("dst_color", this.color_after);
 
         //TODO: add requirements
@@ -317,9 +329,9 @@
 
 .el-main {
   color: rgb(7, 7, 7);
+  min-height: calc(100vh - 320px);
   text-align: center;
-  margin: 20px 50px;
-  padding: 70px 50px;
+  margin: 100px 20px; 
 }
 
 </style>
