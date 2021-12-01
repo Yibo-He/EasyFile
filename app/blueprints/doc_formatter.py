@@ -106,7 +106,6 @@ def run_formatter():
                 jsondata.append(file_info)
                 continue
             try:
-                print("??????????????????????????")
                 formatted_doc = formatter(raw_doc, requirements)
                 formatted_name = 'formatted_' + file_name
                 formatted_doc.save(os.path.join('./temp/', formatted_name))
@@ -205,14 +204,15 @@ def download_doc(filename):
     error = check_formatted_file_permission(filename)
     print(error)
     if error is None:
+        print(current_app.config['TEMP_PATH'], filename)
         response = make_response(send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True))
         response.headers["Access-Control-Expose-Headers"] = "Content-disposition"
         return response
-    return None
+    return jsonify({})
 
 def check_formatted_file_permission(filename):
 
-    if str(session.get('user_id')) != filename.split("&")[0].split('_')[-1]:
+    if str(g.user) != filename.split("&")[0].split('_')[-1]:
         return "Permission denied"
     return None
 
