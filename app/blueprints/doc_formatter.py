@@ -26,10 +26,10 @@ def index():
 
 
 @bp.route('/upload_doc', methods=['POST'])
-@login_required
+#@login_required
 def upload_doc():
     files_dict = request.files
-    print(files_dict)
+    #print(files_dict)
     # for i, j in files_dict.items():
     #     print(i, j)
     
@@ -48,11 +48,11 @@ def upload_doc():
         for file_obj in files_dict.values():
             print(file_obj)
             file_info = file_template.copy()
-            status, info = allocate_docID(session.get('user_id'), file_obj.filename)
+            status, info = allocate_docID(g.user, file_obj.filename)
             if status == True:
                 try:
                     docID = info["idx"]
-                    file_name = str(session.get('user_id')) + '&' +  str(docID) + '&' + file_obj.filename
+                    file_name = str(g.user) + '&' +  str(docID) + '&' + file_obj.filename
                     file_path = os.path.join('./temp/', file_name)
                     file_obj.save(file_path)
                     file_info["filename"] = file_name
@@ -72,9 +72,8 @@ def upload_doc():
 
 
 @bp.route('/run_formatter', methods=['POST'])
-@login_required
+#@login_required
 def run_formatter():
-    # file_names = literal_eval(request.form['file_names'])
     file_names = request.form['file_names'].split(',')
     print(file_names)
     # print(type(file_names))
@@ -85,7 +84,9 @@ def run_formatter():
     jsondata = []
     file_template = {'state': 0, 'info':'success', 'formatted_name':"invalid", 'original_name': "invalid"}
     # jsondata = {'state': 0, 'info':'success', 'formatted_names':[] }  # to mark the state
+
     error = check_file_permission(file_names)
+
     if error is not None:
         file_info = file_template.copy()
         file_info['state'] = 1
@@ -105,6 +106,7 @@ def run_formatter():
                 jsondata.append(file_info)
                 continue
             try:
+                print("??????????????????????????")
                 formatted_doc = formatter(raw_doc, requirements)
                 formatted_name = 'formatted_' + file_name
                 formatted_doc.save(os.path.join('./temp/', formatted_name))
@@ -121,7 +123,7 @@ def run_formatter():
     return jsonify(jsondata)
 
 @bp.route('/run_pdf2chart', methods=['POST'])
-@login_required
+#@login_required
 def run_pdf2chart():
     # file_names = literal_eval(request.form['file_names'])
     file_names = request.form['file_names'].split(',')
@@ -135,7 +137,9 @@ def run_pdf2chart():
     jsondata = []
     file_template = {'state': 0, 'info':'success', 'chart_name':"invalid", 'original_name': "invalid"}
     # jsondata = {'state': 0, 'info':'success', 'formatted_names':[] }  # to mark the state
+
     error = check_file_permission(file_names)
+
     if error is not None:
         file_info = file_template.copy()
         file_info['state'] = 1
@@ -199,6 +203,7 @@ def download_doc(filename):
 
     # jsondata = {'state': 0, 'info':'success'}  # to mark the state
     error = check_formatted_file_permission(filename)
+    print(error)
     if error is None:
         response = make_response(send_from_directory(current_app.config['TEMP_PATH'], filename, as_attachment=True))
         response.headers["Access-Control-Expose-Headers"] = "Content-disposition"
@@ -214,7 +219,7 @@ def check_formatted_file_permission(filename):
 
 def check_file_permission(file_names):
     for fn in file_names:
-        if str(session.get('user_id')) != fn.split("&")[0]:
+        if str(g.user) != fn.split("&")[0]:
             # print(str(session.get("user_id")), fn)
             return "Permission denied"
     #else:
