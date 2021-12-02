@@ -13,9 +13,6 @@ def init_app(app):
 def init_db_command():
     init_db()
     click.echo('Initialized the database.')
-    
-def init_db():
-    pass
 
 def get_db():
     if 'db' not in g:
@@ -84,19 +81,19 @@ def check_password(username, passwd):
                 "id": res[0][0],
                 "info": 'OK'
             }
-            return True, info
+            return 0, info
         else:
             info = {
                 "id": None,
                 "info": 'Incorrect Username or Password'
             }
-            return False, info
+            return 1, info
     except:
         info = {
             "id": None,
             "info": "Illegal Input"
         }
-        return False, info
+        return 1, info
       
 def allocate_docID(uid, filename):
     try:

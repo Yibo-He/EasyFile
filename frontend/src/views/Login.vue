@@ -85,7 +85,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+//import axios from "axios";
 export default {
     name: "login",
 
@@ -115,17 +115,6 @@ export default {
             var post_request = new FormData();
             post_request.append("username", this.loginParam.username);
             post_request.append("password", this.loginParam.password);
-            //document.write('line 91')
-            /*
-        this.$http
-        .request({
-          //url: this.$url + '/login_backend',
-          url: 'http://localhost:5000/auth/login',
-          method: 'post',
-          data: post_request,
-           headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        */
 
             this.$axios
                 .post("http://localhost:5000/auth/login", post_request, {
@@ -136,21 +125,33 @@ export default {
                 .then((response) => {
                     //document.write('line 107')
                     console.log(response);
-                    // if(response.data.login.retCode == 1){  //这行在最后需要代替下面的 if true
-                    // eslint-disable-next-line no-constant-condition
+
                     if (response.data.state == 0) {
                         alert("登陆成功");
-                        /*
-                  this.$message({
-                      showClose: true,
-                      message:'登录成功'
-                  })
-                  */
+
                         localStorage.setItem(
                             "ms_username",
                             this.loginParam.username
                         );
+                        localStorage.setItem(
+                            "accessToken",
+                            response.data.tokenInfo["access_token"]
+                        );
+                        localStorage.setItem(
+                            "refreshToken",
+                            response.data.tokenInfo["refresh_token"]
+                        );
+                        localStorage.setItem(
+                            "accessTokenExpiryTime",
+                            response.data.tokenInfo["access_token_expire_in"]
+                        );
+                        localStorage.setItem(
+                            "refreshTokenExpiryTime",
+                            response.data.tokenInfo["refresh_token_expire_in"]
+                        );
                         this.$router.push("/home");
+                        this.$axios.defaults.headers["Authorization"] =
+                            "jwt " + localStorage.getItem("accessToken");
                     } else {
                         alert("登陆失败");
                     }
