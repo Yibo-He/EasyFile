@@ -1,11 +1,20 @@
 # EasyFile
 
-#### Bugs:
+#### Some bugs to be fixed:
 
-1. 出现处理错误的时候没有反馈到前端上，下载的时候是一个空的json文件
-2. 处理不了`.doc`（暂时先不解决了，但是要写清楚提示）
-3. 下载时遇到问题`127.0.0.1 - - [05/Dec/2021 15:11:48] "GET /download/formatted_haoshibo&13&xxx.docx│  App running at:
-    HTTP/1.1" 404 -`
+1. 出现处理错误的时候没有反馈到前端上，下载的时候是一个空的`json`文件?
+2. 处理长度大于1的列表似乎有问题
+3. entity tagger应该作为全局变量，在初始化的时候Load进来。现在发送请求之后每次都要重新load，要等10秒，因为g不管用...
+
+#### Fixed bugs (to be checked):
+
+1. 处理不了`.doc`（可以不用解决，但是要写清楚提示，之前的提示是上传错误，现在已经改过了）
+
+
+
+#### Entity Recognition
+
+把“转换前的字符串”写成`<ENT>`, 就会识别所有的entity然后进行转换。现在后续的处理还有点问题，可能需要ljh一起看一下orz
 
 
 
