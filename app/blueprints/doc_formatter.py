@@ -52,7 +52,9 @@ def upload_doc():
             if status == True:
                 try:
                     docID = info["idx"]
+                    print("docid: ", docID)
                     file_name = str(g.user) + '&' +  str(docID) + '&' + file_obj.filename
+                    print("file_name: ", file_name)
                     file_path = os.path.join('./temp/', file_name)
                     file_obj.save(file_path)
                     file_info["filename"] = file_name
@@ -98,13 +100,20 @@ def run_formatter():
             file_info = file_template.copy()
             file_info['original_name'] = file_name
             try:
-                raw_doc = docx.Document(os.path.join('./temp/', file_name))
-            except:
+                path = os.path.join('./temp/', file_name)
+                print(path)
+                raw_doc = docx.Document(path)
+            except docx.opc.exceptions.PackageNotFoundError:  # this is a common error
                 error = 'No such file: ' + file_name
                 file_info['state'] = 3
-                file_info['info'] = "File not found"
+                file_info['info'] = error
                 jsondata.append(file_info)
                 continue
+            except:
+                error = 'Not Supported: ' + file_name + '. Please make sure the doc file is ended with "docx"'
+                file_info['state'] = 3
+                file_info['info'] = error
+                jsondata.append(file_info)
             try:
                 formatted_doc = formatter(raw_doc, requirements)
                 formatted_name = 'formatted_' + file_name
@@ -232,6 +241,7 @@ def get_reqs(form):
     req_dict = {}
     for k,v in form.items():
         if k != 'file_names':
+            print("k, v", k, v)
             req_dict[k] = v if k != 'src_size' and k!= 'dst_size' else float(v)
     return [req_dict]
     '''
