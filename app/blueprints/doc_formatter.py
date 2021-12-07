@@ -12,7 +12,13 @@ from .auth import login_required
 from ..db import get_db, allocate_docID
 from ..tools.formatter import formatter
 from ..tools.pdf import pdf2chart, save_tables, process
+
+import ltp  # # this is for debug. Not necessary when it's integrated to formatter.
+from ..tools.ner import get_ner  # this is for debug. Not necessary when it's integrated to formatter.
+
+
 from flask import send_from_directory, current_app, make_response
+
 
 bp = Blueprint('doc_formatter', __name__)
 
@@ -52,7 +58,9 @@ def upload_doc():
             if status == True:
                 try:
                     docID = info["idx"]
+                    print("docid: ", docID)
                     file_name = str(g.user) + '&' +  str(docID) + '&' + file_obj.filename
+                    print("file_name: ", file_name)
                     file_path = os.path.join('./temp/', file_name)
                     file_obj.save(file_path)
                     file_info["filename"] = file_name
@@ -98,15 +106,24 @@ def run_formatter():
             file_info = file_template.copy()
             file_info['original_name'] = file_name
             try:
-                raw_doc = docx.Document(os.path.join('./temp/', file_name))
-            except:
+                path = os.path.join('./temp/', file_name)
+                print(path)
+                raw_doc = docx.Document(path)
+            except docx.opc.exceptions.PackageNotFoundError:  # this is a common error
                 error = 'No such file: ' + file_name
                 file_info['state'] = 3
-                file_info['info'] = "File not found"
+                file_info['info'] = error
                 jsondata.append(file_info)
                 continue
+            except:
+                error = 'Not Supported: ' + file_name + '. Please make sure the doc file is ended with "docx"'
+                file_info['state'] = 3
+                file_info['info'] = error
+                jsondata.append(file_info)
+
             try:
-                formatted_doc = formatter(raw_doc, requirements)
+                formatted_doc = formatter(raw_doc, requirements, get_ltp())
+                # get_ltp calls to load the tagger. The loading takes about 10s. We can do this in the initialization in the future. 
                 formatted_name = 'formatted_' + file_name
                 formatted_doc.save(os.path.join('./temp/', formatted_name))
                 file_info['formatted_name'] = formatted_name
@@ -114,6 +131,8 @@ def run_formatter():
                 error = 'failed to transform the file: ' + file_name
                 file_info['state'] = 2
                 file_info['info'] = error
+
+
             jsondata.append(file_info)
           # only successful files
     # flash(error)
@@ -195,6 +214,18 @@ def run_pdf2chart():
     print(jsondata)
     return jsonify(jsondata)
 
+# this is for debug. You can try extracting entities in a sentence (in Chinese) with postman.
+@bp.route('/ner/<sentence>', methods=['GET','POST'])
+def get_entities(sentence):
+    if 'myltp' in g:
+        print("loading the cached ltp.")
+        myltp = g.myltp
+    else:
+        print("initializing...")
+        g.myltp = ltp.LTP()
+        myltp = g.myltp
+    print("Initialized the ltp.")
+    return str(get_ner(sentence, myltp))
 
 @bp.route('/download/<filename>', methods=['GET','POST'])
 @login_required
@@ -225,6 +256,13 @@ def check_file_permission(file_names):
     #else:
     return None
 
+def get_ltp():
+    # To load the entity tagger. A better way to store it as a global variable is to explore.
+    # Note this will cost around 10 seconds!
+    if "myltp" not in g:
+        g.myltp = ltp.LTP()
+    return g.myltp
+
 def get_reqs(form):
     # return [
     #     {"src_str":"用户","src_typeface":"等线","src_size":16,"src_color":"000000",
@@ -232,6 +270,7 @@ def get_reqs(form):
     req_dict = {}
     for k,v in form.items():
         if k != 'file_names':
+            print("k, v", k, v)
             req_dict[k] = v if k != 'src_size' and k!= 'dst_size' else float(v)
     return [req_dict]
     '''

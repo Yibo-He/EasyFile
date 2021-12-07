@@ -9,3 +9,5 @@ temp/
 
 frontend/node_modules
 
+*.docx
+*.pdf
