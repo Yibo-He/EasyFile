@@ -14,7 +14,7 @@
 
 #### Entity Recognition
 
-把“转换前的字符串”写成`<ENT>`, 就会识别所有的entity然后进行转换。现在后续的处理还有点问题，可能需要ljh一起看一下orz
+把“转换前的字符串”写成`<ENT>`, 就会识别所有的entity然后进行转换。现在后续的处理还有点问题，可能需要ljh一起看一下orz。如果不改内容，则把“转换前的字符串”也写成`<ENT>`。
 
 
 
@@ -22,7 +22,7 @@
 
 After you clone this repo, please
 
-1. create `tmp` folder in the root directory
+1. create `temp` folder in the root directory
 2. create `instance/config.py`, and config following this template
 
 ```python
