@@ -30,3 +30,6 @@
 src_str为空，dst_str必须为空
 
 ...
+
+### 关于翻译
+调用formatter中的translater，参数为文档对象，源语言，目标语言
