@@ -1,5 +1,6 @@
 from .process import process
 from .ner import get_ner
+from .translate import translate
 def formatter(document, requirements, myltp=None):
     # print("OK")
 
@@ -28,3 +29,8 @@ def formatter(document, requirements, myltp=None):
     for requirement in requirements:
         document=process(document,requirement)
     return document
+  
+
+def translater(document, fromLang='auto', toLang='zh'):
+    translate(document, fromLang, toLang)
+
