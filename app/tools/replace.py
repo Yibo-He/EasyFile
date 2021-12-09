@@ -160,3 +160,4 @@ def replace(document, default, old, new):
                 if new.font.size != 0:
                     run.font.size = Pt(new.font.size)
     return
+  
