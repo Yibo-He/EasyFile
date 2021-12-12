@@ -62,9 +62,9 @@
 <style scoped>
 
 .title {
-  background-color: #67bff1;
+  background-color: #c7ede6;
   width: 150px;
-  padding-left: 30px;
+  padding-left: 45px;
 }
 
 .el-main {
