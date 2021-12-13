@@ -6,3 +6,5 @@ frontend/node_modules
 *.docx
 *.pdf
 *.zip
+test.py
+package-lock.json
