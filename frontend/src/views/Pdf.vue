@@ -32,14 +32,17 @@
                         <el-upload
                             class="upload-demo"
                             drag
-                            action="http://localhost:5000/upload_doc"
+                            action="http://localhost:5000/upload_file"
                             multiple
                             :headers="headerObj"
                             :on-success="save_fnames"
                             :with-credentials="true"
                             style="background-color: #f0c8cd; width: 500px; padding: 20px; margin-left:40px"
                         >
-                            <img src="../assets/pdf-logo-q.png" style="width: 150px;margin-top: 5px">
+                            <img
+                                src="../assets/pdf-logo-q.png"
+                                style="width: 150px;margin-top: 5px"
+                            />
                             <div class="el-upload__text">
                                 将文件拖到此处，或<em style="color: #eb3f3f"
                                     >点击上传</em
@@ -184,7 +187,6 @@ export default {
                     .catch();
             }
             this.formatted_fname_list = [];
-
         },
 
         save_fnames(response) {
@@ -240,28 +242,28 @@ export default {
 </script>
 
 <style scoped>
-.pdf{
-  height: 100%;
+.pdf {
+    height: 100%;
 }
 
 .el-header {
-  height: 60px;
-  color: white;
-  line-height: 60px;
-  padding: 0!important;
+    height: 60px;
+    color: white;
+    line-height: 60px;
+    padding: 0 !important;
 }
 
 .title {
-  background-color: #f15b6c;
-  width: 150px;
-  text-align: center;
+    background-color: #f15b6c;
+    width: 150px;
+    text-align: center;
 }
 
-.el-footer { 
-  background-color: #f15b6c;
-  color: white;
-  text-align: center;
-  /* margin-top: -60px; */
-  line-height: 60px;
+.el-footer {
+    background-color: #f15b6c;
+    color: white;
+    text-align: center;
+    /* margin-top: -60px; */
+    line-height: 60px;
 }
 </style>

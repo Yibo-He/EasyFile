@@ -97,7 +97,7 @@ def check_password(username, passwd):
         }
         return 1, info
       
-def allocate_docID(uid, filename):
+def allocate_fileID(uid, filename):
     try:
         db = get_db()
         cursor = db.cursor()
@@ -121,3 +121,6 @@ def allocate_docID(uid, filename):
         return True, info
     except:
         return False, {"idx": -1, "info": "Unknown Error"}
+
+def record_file(filepath, processor):
+    pass

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, blueprints
+from flask import Flask
 from flask_cors import CORS
 
 def create_app(test_config = None):
@@ -20,14 +20,14 @@ def create_app(test_config = None):
         app.config.from_mapping(test_config)
 
     from . import db
-    # print("Trying to initialize db...")
     db.init_app(app)
 
     from .blueprints import auth
     app.register_blueprint(auth.bp)
 
+    from .blueprints import processor
     from .blueprints import doc_formatter
-    app.register_blueprint(doc_formatter.bp)
-    #app.add_url_rule('/', endpoint='index')
+    from .blueprints import pdf_table_extractor
+    app.register_blueprint(processor.bp)
 
     return app
