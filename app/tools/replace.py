@@ -133,13 +133,13 @@ def replace(document, default, old, new):
                 continue
             run = myruns[i - j][0]
             run.text = new.str
-            if len(new.font.color) !=0:
+            if new.font.color:
                 run.font.color.rgb = RGBColor.from_string(new.font.color)
             # print(new.font.name)
-            if len(run.font.name) != 0:
+            if run.font.name:
                 run.font.name = new.font.name
                 run._element.rPr.rFonts.set(qn('w:eastAsia'),new.font.name)
-            if new.font.size != 0:
+            if new.font.size:
                 run.font.size = Pt(new.font.size)
             for k in range(1, len(old.str)):
                 myruns[i - k][0].text = ""
@@ -149,15 +149,15 @@ def replace(document, default, old, new):
             if check(RepStr(color=old.font.color, name=old.font.name, size=old.font.size),
                      RepStr(color=run[1].color, name=run[1].name,size=run[1].size)):
                 run=run[0]
-                if len(new.str) != 0:
+                if new.str:
                     run.text = new.str
-                if len(new.font.color) != 0:
+                if new.font.color:
                     run.font.color.rgb = RGBColor.from_string(new.font.color)
                 # print(new.font.name)
-                if len(run.font.name) != 0:
+                if run.font.name:
                     run.font.name = new.font.name
                     run._element.rPr.rFonts.set(qn('w:eastAsia'), new.font.name)
-                if new.font.size != 0:
+                if new.font.size:
                     run.font.size = Pt(new.font.size)
     return
   

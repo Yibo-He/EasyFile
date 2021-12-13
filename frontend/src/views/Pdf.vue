@@ -123,10 +123,6 @@ export default {
                     label: "表格提取",
                 },
                 {
-                    value: "内容对比",
-                    label: "内容对比",
-                },
-                {
                     value: "待开发",
                     label: "待开发",
                     disabled: true,
@@ -186,9 +182,9 @@ export default {
                         link.click();
                     })
                     .catch();
-
-                this.formatted_fname_list = [];
             }
+            this.formatted_fname_list = [];
+
         },
 
         save_fnames(response) {

@@ -340,9 +340,9 @@ export default {
                         link.click();
                     })
                     .catch();
-
-                this.formatted_fname_list = [];
             }
+            this.formatted_fname_list = [];
+
         },
 
         save_fnames(response) {

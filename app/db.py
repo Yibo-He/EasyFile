@@ -39,7 +39,7 @@ def init_db():
     sql = """
         create table User(
             id varchar(255) not null primary key,
-            pw varchar(16)
+            pw varchar(255)
             )engine=innodb default charset=utf8;
         """
     cursor.execute(sql)
@@ -61,6 +61,8 @@ def create_user(username, passwd):
     try:
         db = get_db()
         cursor = db.cursor()
+        print(username)
+        print(passwd)
         sql = f'insert into User(id, pw) values("{username}", "{passwd}")'
         cursor.execute(sql)
         db.commit()

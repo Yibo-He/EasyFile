@@ -14,6 +14,8 @@ def create_app(test_config = None):
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=False)
+    elif isinstance(test_config, str):
+        app.config.from_pyfile(test_config, silent=False)
     else:
         app.config.from_mapping(test_config)
 

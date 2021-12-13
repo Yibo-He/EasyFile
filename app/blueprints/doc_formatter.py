@@ -228,7 +228,7 @@ def get_entities(sentence):
     return str(get_ner(sentence, myltp))
 
 @bp.route('/download/<filename>', methods=['GET','POST'])
-@login_required
+# @login_required
 def download_doc(filename):
 
     # jsondata = {'state': 0, 'info':'success'}  # to mark the state

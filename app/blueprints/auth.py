@@ -18,6 +18,7 @@ def register():
     #print(session.get('user_id'))
     jsondata = {}
     if request.method == 'POST':
+        print(dir(request))
         username = request.form['username']
         password = request.form['password']
         db = get_db()
