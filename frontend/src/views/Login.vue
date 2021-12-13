@@ -86,6 +86,7 @@
 
 <script>
 //import axios from "axios";
+const sha256 = require("js-sha256").sha256;
 export default {
     name: "login",
 
@@ -114,7 +115,7 @@ export default {
         submitForm(formName) {
             var post_request = new FormData();
             post_request.append("username", this.loginParam.username);
-            post_request.append("password", this.loginParam.password);
+            post_request.append("password", sha256(this.loginParam.password));
 
             this.$axios
                 .post("http://localhost:5000/auth/login", post_request, {
