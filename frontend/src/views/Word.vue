@@ -35,14 +35,17 @@
                         <el-upload
                             class="upload-demo"
                             drag
-                            action="http://localhost:5000/upload_doc"
+                            action="http://localhost:5000/upload_file"
                             multiple
                             :headers="headerObj"
                             :on-success="save_fnames"
                             :with-credentials="true"
                             style="background-color: #c7ede6; width: 400px; padding: 10px"
                         >
-                            <img src="../assets/word-logo-q2.png" style="width: 150px; margin-top: 10px">
+                            <img
+                                src="../assets/word-logo-q2.png"
+                                style="width: 150px; margin-top: 10px"
+                            />
                             <div class="el-upload__text">
                                 将文件拖到此处，或<em>点击上传</em>
                             </div>
@@ -160,9 +163,9 @@
                         </el-row>
 
                         <br />
-                        <el-button 
+                        <el-button
                             type="primary"
-                            style="background:rgb(50, 120, 220); border-color: rgb(50, 120, 220)" 
+                            style="background:rgb(50, 120, 220); border-color: rgb(50, 120, 220)"
                             @click="start"
                             >开始处理</el-button
                         >
@@ -342,7 +345,6 @@ export default {
                     .catch();
             }
             this.formatted_fname_list = [];
-
         },
 
         save_fnames(response) {
@@ -415,37 +417,37 @@ export default {
 </script>
 
 <style scoped>
-.word{
-  height: 100%;
+.word {
+    height: 100%;
 }
 .title {
-  background-color: #78a0cf;
-  width: 150px;
-  text-align: center;
+    background-color: #78a0cf;
+    width: 150px;
+    text-align: center;
 }
 
 .el-container {
-  min-width: 1100pt;
+    min-width: 1100pt;
 }
 
 .el-header {
-  height: 60px;
-  color: white;
-  line-height: 60px;
-  padding: 0!important;
-  min-width: 1100pt;
+    height: 60px;
+    color: white;
+    line-height: 60px;
+    padding: 0 !important;
+    min-width: 1100pt;
 }
 
 .el-main {
-  margin-top: 60px;
-  min-width: 1100pt;
+    margin-top: 60px;
+    min-width: 1100pt;
 }
 
-.el-footer { 
-  background-color: #78a0cf;
-  color: white;
-  text-align: center;
-  line-height: 60px;
-  min-width: 1100pt;
+.el-footer {
+    background-color: #78a0cf;
+    color: white;
+    text-align: center;
+    line-height: 60px;
+    min-width: 1100pt;
 }
 </style>

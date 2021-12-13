@@ -1,16 +1,26 @@
 import functools
 from flask import (
-    Blueprint, flash, g, request, session, url_for, jsonify
+    Blueprint, g, request, jsonify
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import current_app, g
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired, BadSignature, BadData
 import time
+
+from .processor  import sweep_temp_files
 from ..db import create_user, check_password, get_db
 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+
+@bp.route('/')
+def index():
+    if g.userID is None:
+        return {}
+    else:
+        return g.userID
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -78,7 +88,13 @@ def login():
         jsondata['tokenInfo'] = gen_token_seq(info['id'])
 
     return jsonify(jsondata)
-
+    
+@bp.route('/logout',methods=('GET', 'POST'))
+def logout():
+    sweep_temp_files()
+    jsondata = {'state': 0, 'info':'success'}  # to mark the state
+    return jsonify(jsondata)
+    
 @bp.before_app_request
 def load_logged_in_user():
     if 'Authorization' in request.headers:
@@ -86,28 +102,23 @@ def load_logged_in_user():
         if len(split_token) == 2 and split_token[0] == 'jwt':
             token = request.headers['Authorization'].split(' ')[1]
         else:
-            g.user = None
+            g.userID = None
             return
     else:
-        g.user = None
+        g.userID = None
         return
     
     validator = validate_token(token)
     if validator['code'] == 200:
-        g.user = validator['userid']
+        g.userID = validator['userid']
     else:
-        g.user = None
-    
-@bp.route('/logout',methods=('GET', 'POST'))
-def logout():
-    jsondata = {'state': 0, 'info':'success'}  # to mark the state
-    return jsonify(jsondata)
+        g.userID = None
 
 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs):
-        if g.user is None:
+        if g.userID is None:
             return jsonify({'state': -1, 'info': 'Login required to continue.'})
         return view(*args, **kwargs)
 
