@@ -2,33 +2,38 @@
   <div class="home">
     <el-container>
       <el-header>
-        <el-row>
+        <el-row :align="top">
           <el-col :span="8">
             <div class='title'>EasyFile</div>
           </el-col>
           <el-col :span="16" style="text-align: right; padding-right: 30px;">
-            <el-button plain size="medium" @click="route2help">使用说明</el-button>
+            <el-button plain size="medium" @click="route2help">关于</el-button>
             <el-button plain size="medium" @click="route2login">登录</el-button>
             <el-button plain size="medium" @click="route2register">注册</el-button>
           </el-col>
         </el-row>
       </el-header>
-      <el-main>
+      <el-main style="overflow:visible">
         <el-row>
-            <el-col :span="12">
-            <img src="../assets/Microsoft-Word-logo.jpg" style="width: 315px; margin: 20px">
-            <el-button round style="width:65%;padding:30px;margin-bottom:15px;color:#67bff1;" @click="route2word">Word处理</el-button>
+            <el-col :span="12" style>
+            <img src="../assets/word-logo-q.png" style="width: 320px; margin-top:80px; margin-left: 90px; margin-bottom: 70px">
             </el-col>
             
             <el-col :span="12">
-              <img src="../assets/pdf-logo.jpeg" style="width: 300px; margin: 20px">
-            <el-button round style="width:65%;padding:30px;margin-bottom:15px;color:#eb3f3f;" @click="route2pdf">Pdf处理</el-button>
+            <img src="../assets/pdf-logo-q2.png" style="width: 320px; margin-top:80px; margin-right: 90px; margin-bottom: 70px">
             </el-col>
             
         </el-row>
-
-        <br /><br />
-        <el-button round style="width:35%;margin-bottom:15px;width:300px;">待开发</el-button>
+        <el-row>
+            <el-col :span="12" style>
+            <el-button round style="width:300px;padding:30px;margin-left: 90px;margin-bottom:80px;color:rgb(0, 60, 145);background-color:#fdfcef;border-color:rgb(0, 60, 145);" @click="route2word">Word处理</el-button>
+            </el-col>
+            
+            <el-col :span="12">
+            <el-button round style="width:300px;padding:30px;margin-right: 90px;margin-bottom:80px;color:rgb(150, 40, 0);background-color:#fdfcef;border-color:rgb(150, 40, 0);" @click="route2pdf">Pdf处理</el-button>
+            </el-col>
+            
+        </el-row>
       </el-main>
       <el-footer>
         Copyright &copy; 软件工程 - 2021. All rights reserved
@@ -66,49 +71,54 @@
 </script>
 
 
-<style scope="this api replaced by slot-scope in 2.5.0+">
+<style scope>
 .home {
   height: 100%;
 }
 
 .title {
-  background-color: #67bff1;
+  background-color: #c7ede6;
   width: 150px;
-  padding-left: 30px;
+  text-align: center;
 }
 
 .el-container {
   height: 100%;
-  min-height: 100%;
+  width: 100%;
+  min-height: 500pt;
   display: flex;
   flex-direction: column;
   justify-content:space-between;
-
+  min-width: 740pt;
 }
 
 .el-header {
   height: 60px;
-  background-color: white;
+  background-color: #fdfcef;
+  color: black;
   line-height: 60px;
   padding: 0!important;
+  min-width: 740pt;
 }
 
-.el-header > span,
+/* .el-header > span,
 .el-header .el-dropdown {
   font-size: 18px;
-}
-
-.el-footer { 
-  background-color: #67bff1;
-  color: #070707;
-  text-align: center;
-  line-height: 60px;
-}
+} */
 
 .el-main {
   color: rgb(7, 7, 7);
-  min-height: calc(100vh - 320px);
+  height: 100%;
+  min-width: 740pt;
   text-align: center;
-  margin: 20px 20px; 
 }
+
+.el-footer { 
+  background-color: #c7ede6;
+  color: black;
+  text-align: center;
+  line-height: 60px;
+  min-width: 740pt;
+}
+
 </style>

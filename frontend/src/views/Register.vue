@@ -81,6 +81,7 @@
 
 <script>
 // import axios from 'axios'
+const sha256 = require("js-sha256").sha256;
 export default {
     name: "register",
     data: function() {
@@ -111,7 +112,7 @@ export default {
         registerForm() {
             var post_request = new FormData();
             post_request.append("username", this.param.username);
-            post_request.append("password", this.param.password);
+            post_request.append("password", sha256(this.param.password));
             post_request.append("email", this.param.email);
             let _this = this;
             this.$axios

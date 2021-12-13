@@ -3,24 +3,6 @@ from app import create_app
 import json
 # from flask_testing import TestCase
 
-class TestRegister(unittest.TestCase):
-    """define a test class for Register"""
-    def setUp(self):
-        self.app = create_app(r'D:\Downloads\EasyFile\instance\config.py')
-        self.app.config['TESTING'] = True
-        self.app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
-        self.client = self.app.test_client()
-    # TODO
-
-class TestLogin(unittest.TestCase):
-    """define a test class for Login"""
-    def setUp(self):
-        self.app = create_app(r'D:\Downloads\EasyFile\instance\config.py')
-        self.app.config['TESTING'] = True
-        self.app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = False
-        self.client = self.app.test_client()
-    # TODO
-
 
 class TestLogout(unittest.TestCase):
     """define a test class for Logout"""

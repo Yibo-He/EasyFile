@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="pdf">
         <el-container>
             <el-header>
                 <el-row>
@@ -26,9 +26,9 @@
                 </el-row>
             </el-header>
 
-            <el-main>
+            <el-main style="overflow:visible">
                 <el-row>
-                    <el-col :span="12" style="padding: 50px">
+                    <el-col :span="24" align="middle" style="padding: 20px">
                         <el-upload
                             class="upload-demo"
                             drag
@@ -37,9 +37,9 @@
                             :headers="headerObj"
                             :on-success="save_fnames"
                             :with-credentials="true"
-                            style="background: rgba(128,128,128,.5); padding: 5px"
+                            style="background-color: #f0c8cd; width: 500px; padding: 20px; margin-left:40px"
                         >
-                            <i class="el-icon-upload"></i>
+                            <img src="../assets/pdf-logo-q.png" style="width: 150px;margin-top: 5px">
                             <div class="el-upload__text">
                                 将文件拖到此处，或<em style="color: #eb3f3f"
                                     >点击上传</em
@@ -51,11 +51,12 @@
                         </el-upload>
                     </el-col>
 
-                    <el-col :span="12">
+                    <el-col :span="24" align="middle" style="padding: 20px">
                         <br /><br />
                         <el-select
                             v-model="functionality"
                             placeholder="请选择PDF处理功能"
+                            style="margin-left:50px"
                         >
                             <el-option
                                 v-for="item in func_options"
@@ -71,20 +72,20 @@
                         <el-input
                             v-model="pages"
                             placeholder="请输入处理的页码，例如1-5、8、11-13"
-                            style="width: 400px"
+                            style="width: 400px; margin-left: 50px"
                         ></el-input>
                         <br /><br />
 
                         <el-button
                             type="primary"
-                            style="background: #eb3f3f; border-color: #eb3f3f"
+                            style="background: #e93b50; border-color: #eb3f3f; margin-left: 50px"
                             @click="start_pdf"
                             >开始处理</el-button
                         >
                         <div>&emsp;</div>
                         <el-button
                             type="primary"
-                            style="background: #eb3f3f; border-color: #eb3f3f"
+                            style="background: #e93b50; border-color: #eb3f3f; margin-left: 50px"
                             icon="el-icon-download"
                             round
                             size="medium"
@@ -120,10 +121,6 @@ export default {
                 {
                     value: "表格提取",
                     label: "表格提取",
-                },
-                {
-                    value: "内容对比",
-                    label: "内容对比",
                 },
                 {
                     value: "待开发",
@@ -185,9 +182,9 @@ export default {
                         link.click();
                     })
                     .catch();
-
-                this.formatted_fname_list = [];
             }
+            this.formatted_fname_list = [];
+
         },
 
         save_fnames(response) {
@@ -243,23 +240,28 @@ export default {
 </script>
 
 <style scoped>
+.pdf{
+  height: 100%;
+}
+
+.el-header {
+  height: 60px;
+  color: white;
+  line-height: 60px;
+  padding: 0!important;
+}
+
 .title {
-    background-color: #eb3f3f;
-    width: 150px;
-    padding-left: 30px;
+  background-color: #f15b6c;
+  width: 150px;
+  text-align: center;
 }
 
-.el-main {
-    color: rgb(7, 7, 7);
-    min-height: calc(100vh - 280px);
-    text-align: center;
-    margin: 80px 20px;
-}
-
-.el-footer {
-    background-color: #eb3f3f;
-    color: #070707;
-    text-align: center;
-    line-height: 60px;
+.el-footer { 
+  background-color: #f15b6c;
+  color: white;
+  text-align: center;
+  /* margin-top: -60px; */
+  line-height: 60px;
 }
 </style>
