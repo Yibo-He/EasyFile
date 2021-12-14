@@ -43,18 +43,18 @@
                 label-width="100px"
                 class="demo-ruleForm"
             >
-                <el-form-item label="账号" prop="user">
+                <el-form-item label="昵称" prop="user">
                     <el-input
                         type="text"
-                        v-model="param.username"
+                        v-model="param.nickname"
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
 
-                <el-form-item label="邮箱" prop="pass">
+                <el-form-item label="账号" prop="pass">
                     <el-input
                         type="text"
-                        v-model="param.email"
+                        v-model="param.username"
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
@@ -113,7 +113,7 @@ export default {
             var post_request = new FormData();
             post_request.append("username", this.param.username);
             post_request.append("password", sha256(this.param.password));
-            post_request.append("email", this.param.email);
+            post_request.append("nickname", this.param.nickname);
             let _this = this;
             this.$axios
                 .post("http://localhost:5000/auth/register", post_request, {
@@ -124,14 +124,14 @@ export default {
                 .then((response) => {
                     console.log(response);
                     if (response.data.state == 0) {
-                        alert("注册成功");
+                        //alert("注册成功");
                         _this.$message({
                             message: response.data.info + "！请登录",
                             type: "success",
                         });
                         _this.$router.push("/login");
                     } else {
-                        alert(response.data.info);
+                        //alert(response.data.info);
                         _this.$message({
                             message: response.data.info,
                             type: "error",

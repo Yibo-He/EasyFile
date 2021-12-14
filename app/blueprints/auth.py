@@ -2,7 +2,6 @@ import functools
 from flask import (
     Blueprint, g, request, jsonify
 )
-from werkzeug.security import check_password_hash, generate_password_hash
 from flask import current_app, g
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired, BadSignature, BadData
@@ -15,20 +14,11 @@ from ..db import create_user, check_password, get_db
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-@bp.route('/')
-def index():
-    if g.userID is None:
-        return {}
-    else:
-        return g.userID
-
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
-    #print('line 15')
-    #print(session.get('user_id'))
     jsondata = {}
     if request.method == 'POST':
-        print(dir(request))
+        nickname = request.form['nickname']
         username = request.form['username']
         password = request.form['password']
         db = get_db()
@@ -45,7 +35,7 @@ def register():
             jsondata['info'] = 'Password is required'
             return jsonify(jsondata)
         else:
-            result, info = create_user(username, password)
+            result, info = create_user(username, password, nickname)
             if not result:
                 jsondata['state'] = 3
                 jsondata['info'] = info
@@ -63,29 +53,12 @@ def login():
         password = request.form['password']
         print("getting username and password", username, password)
         
-        '''
-                    error = None
-                    user = db.execute(
-                        'SELECT * FROM user WHERE username = ?', (username,)
-                    ).fetchone()
-
-                    if user is None:
-                        error = 'Incorrect username.'
-                    elif not check_password_hash(user['password'], password):
-                        error = 'Incorrect password.'
-
-                    if error is None:
-                        session.clear()
-                        session['user_id'] = user['id']
-                        return redirect(url_for('index'))
-        '''
-        
         state, info = check_password(username, password)
         print("result:", state, info)
 
         jsondata['state'] = state
         jsondata['info'] = info['info']
-        jsondata['tokenInfo'] = gen_token_seq(info['id'])
+        jsondata['tokenInfo'] = gen_token_seq(info['id'], info['nickname'])
 
     return jsonify(jsondata)
     
@@ -100,7 +73,7 @@ def load_logged_in_user():
     if 'Authorization' in request.headers:
         split_token = request.headers['Authorization'].split(' ')
         if len(split_token) == 2 and split_token[0] == 'jwt':
-            token = request.headers['Authorization'].split(' ')[1]
+            token = split_token[1]
         else:
             g.userID = None
             return
@@ -111,6 +84,7 @@ def load_logged_in_user():
     validator = validate_token(token)
     if validator['code'] == 200:
         g.userID = validator['userid']
+        g.nickname = validator['nickname']
     else:
         g.userID = None
 
@@ -119,12 +93,12 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs):
         if g.userID is None:
-            return jsonify({'state': -1, 'info': 'Login required to continue.'})
+            return jsonify({'state': -1, 'data':None, 'info': 'Login required to continue.'})
         return view(*args, **kwargs)
 
     return wrapped_view
 
-def gen_token_seq(userid):
+def gen_token_seq(userid, nickname):
     if userid is None:
         return None
 
@@ -138,10 +112,12 @@ def gen_token_seq(userid):
     timtstamp = time.time()
     access_token = access_token_gen.dumps({
         "userid": userid,
+        "nickname": nickname,
         "iat": timtstamp
     })
     refresh_token = refresh_token_gen.dumps({
         "userid": userid,
+        "nickname": nickname,
         "iat": timtstamp
     })
 
@@ -182,4 +158,6 @@ def validate_token(token):
 
     msg = 'user(' + str(data['userid']) + ') logged in by token.'
     userid = data['userid']
-    return {'code': 200, 'error_code': 'auth_00', 'message': msg, 'userid': userid}
+    nickname = data['nickname']
+
+    return {'code': 200, 'error_code': 'auth_00', 'message': msg, 'userid': userid, 'nickname': nickname}

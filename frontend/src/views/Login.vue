@@ -135,6 +135,10 @@ export default {
                             this.loginParam.username
                         );
                         localStorage.setItem(
+                            "ms_nickname",
+                            this.loginParam.nickname
+                        );
+                        localStorage.setItem(
                             "accessToken",
                             response.data.tokenInfo["access_token"]
                         );

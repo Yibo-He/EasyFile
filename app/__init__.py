@@ -30,4 +30,7 @@ def create_app(test_config = None):
     from .blueprints import pdf_table_extractor
     app.register_blueprint(processor.bp)
 
+    from .blueprints import homepage
+    app.register_blueprint(homepage.bp)
+
     return app
