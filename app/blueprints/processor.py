@@ -26,9 +26,8 @@ def upload_doc():
 
     if error is None:
         for file_obj in files_dict.values():
-            print(file_obj)
             file_info = file_template.copy()
-            status, info = allocate_fileID(g.userID, file_obj.filename)
+            status, info = allocate_fileID(g.userID)
             if status == True:
                 try:
                     docID = info["idx"]
