@@ -9,6 +9,7 @@ import Register from '../views/Register.vue'
 import Word from '../views/Word.vue'
 import Help from '../views/Help.vue'
 import Pdf from '../views/Pdf.vue'
+import History from '../views/History.vue'
 
 Vue.use(VueRouter)
 Vue.use(Antd)
@@ -52,6 +53,11 @@ const routes = [
     path: '/pdf',
     name: 'Pdf',
     component: Pdf
+  },
+  {
+    path: '/history',
+    name: 'History',
+    component: History
   }
 ]
 
