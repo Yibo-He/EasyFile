@@ -51,7 +51,7 @@ def run_formatter():
                 jsondata.append(file_info)
 
             try:
-                formatted_doc = formatter(raw_doc, requirements, get_ltp())
+                formatted_doc = formatter(raw_doc, requirements)
                 # get_ltp calls to load the tagger. The loading takes about 10s. We can do this in the initialization in the future. 
 
                 formatted_name = file_name
