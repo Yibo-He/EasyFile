@@ -1,11 +1,9 @@
+*.DS_store
+__pycache__
 venv/
-
 *.pyc
-__pycache__/
-
-instance/
-
-temp/
-
 frontend/node_modules
-
+instance
+*.docx
+*.pdf
+*.zip

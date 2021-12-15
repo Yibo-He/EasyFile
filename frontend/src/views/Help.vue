@@ -8,7 +8,7 @@
           </el-col>
           <el-col :span="16" style="text-align: right; padding-right: 30px;">
             <el-button plain size="medium" @click="route2home">首页</el-button>
-            <el-button plain size="medium" @click="route2help">使用说明</el-button>
+            <el-button plain size="medium" @click="route2help">关于</el-button>
             <el-button plain size="medium" @click="route2login">登录</el-button>
             <el-button plain size="medium" @click="route2register">注册</el-button>
           </el-col>
@@ -62,9 +62,9 @@
 <style scoped>
 
 .title {
-  background-color: #67bff1;
+  background-color: #c7ede6;
   width: 150px;
-  padding-left: 30px;
+  padding-left: 45px;
 }
 
 .el-main {
