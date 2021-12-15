@@ -7,39 +7,42 @@
                         <div class="title">EasyFile</div>
                     </el-col>
                     <div v-if="getState()">
-                    <el-col
-                        :span="16"
-                        style="text-align: right; padding-right: 30px;"
-                    >
-                        <el-button plain size="medium" @click="route2home"
-                            >首页</el-button
+                        <el-col
+                            :span="16"
+                            style="text-align: right; padding-right: 30px;"
                         >
-                        <el-button plain size="medium" @click="route2help"
-                            >关于</el-button
-                        >
-                        <el-button plain size="medium" @click="route2login"
-                            >登录</el-button
-                        >
-                        <el-button plain size="medium" @click="route2register"
-                            >注册</el-button
-                        >
-                    </el-col>
+                            <el-button plain size="medium" @click="route2home"
+                                >首页</el-button
+                            >
+                            <el-button plain size="medium" @click="route2help"
+                                >关于</el-button
+                            >
+                            <el-button plain size="medium" @click="route2login"
+                                >登录</el-button
+                            >
+                            <el-button
+                                plain
+                                size="medium"
+                                @click="route2register"
+                                >注册</el-button
+                            >
+                        </el-col>
                     </div>
                     <div v-else>
-                    <el-col
-                        :span="16"
-                        style="text-align: right; padding-right: 30px;"
-                    >
-                        <el-button plain size="medium" @click="route2home"
-                            >首页</el-button
+                        <el-col
+                            :span="16"
+                            style="text-align: right; padding-right: 30px;"
                         >
-                        <el-button plain size="medium" @click="route2help"
-                            >关于</el-button
-                        >
-                        <el-button plain size="medium" @click="logout"
-                            >退出登录</el-button
-                        >
-                    </el-col>
+                            <el-button plain size="medium" @click="route2home"
+                                >首页</el-button
+                            >
+                            <el-button plain size="medium" @click="route2help"
+                                >关于</el-button
+                            >
+                            <el-button plain size="medium" @click="logout"
+                                >退出登录</el-button
+                            >
+                        </el-col>
                     </div>
                 </el-row>
             </el-header>
@@ -311,8 +314,11 @@ export default {
     },
 
     methods: {
-        getState(){
-            return localStorage.getItem('accessToken') == null || localStorage.getItem('accessToken') == '';
+        getState() {
+            return (
+                localStorage.getItem("accessToken") == null ||
+                localStorage.getItem("accessToken") == ""
+            );
         },
         route2home() {
             this.$router.replace("/");
@@ -332,8 +338,8 @@ export default {
         route2pdf() {
             this.$router.replace("/pdf");
         },
-        logout(){
-            localStorage.removeItem('accessToken');
+        logout() {
+            localStorage.removeItem("accessToken");
             window.location.reload();
         },
         download() {
@@ -341,24 +347,24 @@ export default {
             //console.log(this.formatted_fname_list)
             for (var i = 0; i < this.formatted_fname_list.length; i++) {
                 console.log(this.formatted_fname_list[i]);
+                const filename = this.formatted_fname_list[i].split("-")[2];
                 this.$axios
                     .get(
                         "http://localhost:5000/download/" +
                             this.formatted_fname_list[i],
                         {
-                            responseType: "blob",
                             headers: {
                                 Authorization:
                                     "jwt " +
                                     localStorage.getItem("accessToken"),
                             },
+                            responseType: "blob",
                         }
                     )
                     .then((response) => {
                         if (!response) {
                             return;
                         }
-                        const filename = this.formatted_fname_list[i];
                         const url = window.URL.createObjectURL(response.data);
                         const link = document.createElement("a");
                         link.style.display = "none";

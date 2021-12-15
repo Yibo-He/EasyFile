@@ -56,7 +56,6 @@ def upload_doc():
 def download(filename):
     filelist = str2list(filename)
     error = check_file_permission(filelist)
-    print(error)
     
     if error is None:
         print(current_app.config['STORAGE_PATH'], filename)
@@ -77,11 +76,8 @@ def str2list(filename):
     return [filename]
 
 def check_file_permission(file_names):
-    print(g.userID)
     for fn in file_names:
-        print(fn)
         if str(g.userID) != (fn.split('-'))[0]:
-            print(fn.split('-')[0])
             return "Permission denied"
 
     return None
