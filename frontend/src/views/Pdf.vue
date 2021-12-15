@@ -6,6 +6,7 @@
                     <el-col :span="8">
                         <div class="title">EasyFile</div>
                     </el-col>
+                    <div v-if="getState()">
                     <el-col
                         :span="16"
                         style="text-align: right; padding-right: 30px;"
@@ -23,6 +24,23 @@
                             >注册</el-button
                         >
                     </el-col>
+                    </div>
+                    <div v-else>
+                    <el-col
+                        :span="16"
+                        style="text-align: right; padding-right: 30px;"
+                    >
+                        <el-button plain size="medium" @click="route2home"
+                            >首页</el-button
+                        >
+                        <el-button plain size="medium" @click="route2help"
+                            >关于</el-button
+                        >
+                        <el-button plain size="medium" @click="logout"
+                            >退出登录</el-button
+                        >
+                    </el-col>
+                    </div>
                 </el-row>
             </el-header>
 
@@ -135,6 +153,9 @@ export default {
     },
 
     methods: {
+        getState(){
+            return localStorage.getItem('accessToken') == null || localStorage.getItem('accessToken') == '';
+        },
         route2home() {
             this.$router.replace("/");
         },
@@ -152,6 +173,10 @@ export default {
         },
         route2pdf() {
             this.$router.replace("/pdf");
+        },
+        logout(){
+            localStorage.removeItem('accessToken');
+            window.location.reload();
         },
         download() {
             //console.log('line 230')

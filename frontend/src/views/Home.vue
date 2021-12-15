@@ -6,11 +6,21 @@
           <el-col :span="8">
             <div class='title'>EasyFile</div>
           </el-col>
+          <div v-if="getState()">
           <el-col :span="16" style="text-align: right; padding-right: 30px;">
             <el-button plain size="medium" @click="route2help">关于</el-button>
             <el-button plain size="medium" @click="route2login">登录</el-button>
             <el-button plain size="medium" @click="route2register">注册</el-button>
           </el-col>
+          </div>
+          <div v-else>
+          <el-col :span="16" style="text-align: right; padding-right: 30px;">
+            <el-button plain size="medium" @click="route2help">关于</el-button>
+            <el-button plain size="medium" @click="logout">退出登录</el-button>
+            <el-button plain size="medium" @click="route2history">我的</el-button>
+            &#8194; 欢迎回来, {{getName()}}!
+          </el-col>
+          </div>
         </el-row>
       </el-header>
       <el-main style="overflow:visible">
@@ -51,6 +61,12 @@
     };
   },
   methods: {
+    getState(){
+      return localStorage.getItem('accessToken') == null || localStorage.getItem('accessToken') == '';
+    },
+    getName(){
+      return localStorage.getItem('ms_username');
+    },
     route2login(){
       this.$router.push('/login')
     },
@@ -65,6 +81,14 @@
     },
     route2pdf(){
       this.$router.push('/pdf')
+    },
+    route2history(){
+      this.$router.push('/history')
+    },
+    logout(){
+      localStorage.removeItem('accessToken');
+      this.$router.push('/')
+      window.location.reload();
     }
   }
   }
