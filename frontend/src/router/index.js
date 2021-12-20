@@ -1,18 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Antd from 'ant-design-vue';
-import Menu from 'ant-design-vue/lib/menu';
-import 'ant-design-vue/dist/antd.css';
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Word from '../views/Word.vue'
 import Help from '../views/Help.vue'
 import Pdf from '../views/Pdf.vue'
+import History from '../views/History.vue'
 
-Vue.use(VueRouter)
-Vue.use(Antd)
-Vue.use(Menu);
+Vue.use(VueRouter);
 
 
 const routes = [
@@ -52,6 +48,11 @@ const routes = [
     path: '/pdf',
     name: 'Pdf',
     component: Pdf
+  },
+  {
+    path: '/history',
+    name: 'History',
+    component: History
   }
 ]
 
