@@ -54,9 +54,14 @@
                             class="upload-demo"
                             drag
                             action="http://localhost:5000/upload_file"
+                            accept="application/pdf"
+                            :before-upload="onBeforeUpload"
                             multiple
+                            :limit="10"
                             :headers="headerObj"
                             :on-success="save_fnames"
+                            :file-list="fname_list"
+                            :on-remove="remove_fnames"
                             :with-credentials="true"
                             style="background-color: #f0c8cd; width: 500px; padding: 20px; margin-left:40px"
                         >
@@ -76,7 +81,7 @@
                     </el-col>
 
                     <el-col :span="24" align="middle" style="padding: 20px">
-                        <br />
+                        <br /><br />
                         <el-select
                             v-model="functionality"
                             placeholder="请选择PDF处理功能"
@@ -134,6 +139,7 @@ export default {
         return {
             functionality: "",
             pages: "",
+            fpath_list: [],
             fname_list: [], //denote the files to be processed
             formatted_fname_list: [], //denote the processed files
 
@@ -189,7 +195,9 @@ export default {
             //console.log(this.formatted_fname_list)
             for (var i = 0; i < this.formatted_fname_list.length; i++) {
                 console.log(this.formatted_fname_list[i]);
-                const filename = this.formatted_fname_list[i];
+                const filename = this.formatted_fname_list[i].split(
+                    "-(&EF&)-"
+                )[2];
                 this.$axios
                     .get(
                         "http://localhost:5000/download/" +
@@ -205,6 +213,13 @@ export default {
                     )
                     .then((response) => {
                         if (!response) {
+                            return;
+                        }
+                        if (
+                            response.headers["content-type"] ===
+                            "application/json"
+                        ) {
+                            this.$message.error("下载列表为空或无下载权限!");
                             return;
                         }
                         const url = window.URL.createObjectURL(response.data);
@@ -224,18 +239,40 @@ export default {
             console.log(response);
             for (var i = 0; i < response.length; i++) {
                 if (response[i].state == 0) {
-                    this.fname_list.push(response[i].filename);
-                    console.log(this.fname_list);
-                    //console.log('['+this.fname_list.join(',')+']')
+                    this.fname_list.push(
+                        response[i].filename.split("-(&EF&)-")[2]
+                    );
+                    this.fpath_list.push(response[i].filename);
                 } else {
                     alert(response[i].info);
                 }
             }
         },
+
+        remove_fnames(file, fileList) {
+            console.log(file.name);
+            this.fpath_list.splice(this.fname_list.indexOf(file.name), 1);
+            this.fname_list.splice(this.fname_list.indexOf(file.name), 1);
+        },
+
+        onBeforeUpload(file) {
+            console.log(file.type);
+            const isPDF = file.type === "application/pdf";
+            const isLt10M = file.size / 1024 / 1024 < 10;
+
+            if (!isPDF) {
+                this.$message.error("上传文件只能是pdf文档格式!");
+            }
+            if (!isLt10M) {
+                this.$message.error("上传文件大小不能超过 10MB!");
+            }
+            return isPDF && isLt10M;
+        },
+
         start_pdf() {
             //console.log('line 245');
             var post_request = new FormData();
-            post_request.append("file_names", this.fname_list.join(","));
+            post_request.append("file_names", this.fpath_list.join(","));
 
             post_request.append("src_func", this.functionality);
             post_request.append("src_pages", this.pages);
@@ -262,6 +299,7 @@ export default {
                         );
                         this.$message({ message: "处理完成！" });
                     }
+                    this.fpath_list = [];
                     this.fname_list = [];
                 })
                 .catch((response) => {
@@ -274,7 +312,6 @@ export default {
 
 <style scoped>
 .pdf {
-    background-color: rgb(255, 255, 255);
     height: 100%;
 }
 
