@@ -57,9 +57,14 @@
                             class="upload-demo"
                             drag
                             action="http://localhost:5000/upload_file"
+                            accept=".docx, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            :before-upload="onBeforeUpload"
                             multiple
+                            :limit="10"
                             :headers="headerObj"
                             :on-success="save_fnames"
+                            :file-list="fname_list"
+                            :on-remove="remove_fnames"
                             :with-credentials="true"
                             style="background-color: #c7ede6; width: 400px; padding: 10px"
                         >
@@ -224,6 +229,7 @@ export default {
             color_after: "",
             font_style_after: "",
             font_size_after: "",
+            fpath_list: [],
             fname_list: [], //denote the files to be processed
             formatted_fname_list: [], //denote the processed files
 
@@ -234,7 +240,7 @@ export default {
             options_color: [
                 {
                     value: "_color",
-                    label: "-(所有)",
+                    label: "所有(转换前)/默认(转换后)",
                 },
                 {
                     value: "000000",
@@ -265,7 +271,7 @@ export default {
             options_font_style: [
                 {
                     value: "_style",
-                    label: "-(所有)",
+                    label: "所有(转换前)/默认(转换后)",
                 },
                 {
                     value: "宋体",
@@ -294,7 +300,7 @@ export default {
             ],
 
             options_size: [
-                { value: 0, label: "-(所有)" },
+                { value: 0, label: "所有(转换前)/默认(转换后)" },
                 { value: 42, label: "初号" },
                 { value: 36, label: "小初" },
                 { value: 26, label: "一号" },
@@ -342,12 +348,13 @@ export default {
             localStorage.removeItem("accessToken");
             window.location.reload();
         },
+
         download() {
-            //console.log('line 230')
-            //console.log(this.formatted_fname_list)
             for (var i = 0; i < this.formatted_fname_list.length; i++) {
                 console.log(this.formatted_fname_list[i]);
-                const filename = this.formatted_fname_list[i].split("-")[2];
+                const filename = this.formatted_fname_list[i].split(
+                    "-(&EF&)-"
+                )[2];
                 this.$axios
                     .get(
                         "http://localhost:5000/download/" +
@@ -363,6 +370,14 @@ export default {
                     )
                     .then((response) => {
                         if (!response) {
+                            return;
+                        }
+                        console.log(response.headers["content-type"]);
+                        if (
+                            response.headers["content-type"] ===
+                            "application/json"
+                        ) {
+                            this.$message.error("下载列表为空或无下载权限!");
                             return;
                         }
                         const url = window.URL.createObjectURL(response.data);
@@ -382,36 +397,68 @@ export default {
             console.log(response);
             for (var i = 0; i < response.length; i++) {
                 if (response[i].state == 0) {
-                    this.fname_list.push(response[i].filename);
+                    this.fname_list.push(
+                        response[i].filename.split("-(&EF&)-")[2]
+                    );
+                    this.fpath_list.push(response[i].filename);
                     console.log(this.fname_list);
-                    //console.log('['+this.fname_list.join(',')+']')
                 } else {
                     alert(response[i].info);
                 }
             }
         },
+
+        remove_fnames(file, fileList) {
+            console.log(file.name);
+            this.fname_list.splice(this.fname_list.indexOf(file.name), 1);
+        },
+
+        onBeforeUpload(file) {
+            console.log(file.type);
+            const isDoc =
+                file.type ===
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            const isLt10M = file.size / 1024 / 1024 < 10;
+
+            if (!isDoc) {
+                this.$message.error("上传文件只能是docx文档格式!");
+            }
+            if (!isLt10M) {
+                this.$message.error("上传文件大小不能超过 10MB!");
+            }
+            return isDoc && isLt10M;
+        },
+
         start() {
             //console.log('line 245');
             var post_request = new FormData();
-            post_request.append("file_names", this.fname_list.join(","));
+            post_request.append("file_names", this.fpath_list.join(","));
+
             post_request.append("src_str", this.string_before);
-            if (this.font_style_before == "_style") {
-                this.font_style_before = "";
+            if (this.font_style_before == "") {
+                this.font_style_before = "_style";
             }
             post_request.append("src_typeface", this.font_style_before);
+            if (this.font_size_before == "") {
+                this.font_size_before = 0;
+            }
             post_request.append("src_size", this.font_size_before);
-            if (this.color_before == "_color") {
-                this.color_before = "";
+            if (this.color_before == "") {
+                this.color_before = "_color";
             }
             post_request.append("src_color", this.color_before);
+
             post_request.append("dst_str", this.string_after);
-            if (this.font_style_after == "_style") {
-                this.font_style_after = "";
+            if (this.font_style_after == "") {
+                this.font_style_after = "_style";
             }
             post_request.append("dst_typeface", this.font_style_after);
+            if (this.font_size_after == "") {
+                this.font_size_after = 0;
+            }
             post_request.append("dst_size", this.font_size_after);
-            if (this.color_after == "_color") {
-                this.color_after = "";
+            if (this.color_after == "") {
+                this.color_after = "_color";
             }
             post_request.append("dst_color", this.color_after);
 
@@ -438,6 +485,7 @@ export default {
                         this.$message({ message: "处理完成！" });
                     }
                     this.fname_list = [];
+                    this.fpath_list = [];
                 })
                 .catch((response) => {
                     console.log(response);
