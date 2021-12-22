@@ -81,7 +81,7 @@
                     </el-col>
 
                     <el-col :span="24" align="middle" style="padding: 20px">
-                        <br /><br />
+                        <br />
                         <el-select
                             v-model="functionality"
                             placeholder="请选择PDF处理功能"
@@ -313,6 +313,7 @@ export default {
 <style scoped>
 .pdf {
     height: 100%;
+    background-color: rgb(255, 255, 255);
 }
 
 .el-header {
