@@ -251,6 +251,7 @@ export default {
 
         remove_fnames(file, fileList) {
             console.log(file.name);
+            this.fpath_list.splice(this.fname_list.indexOf(file.name), 1);
             this.fname_list.splice(this.fname_list.indexOf(file.name), 1);
         },
 
