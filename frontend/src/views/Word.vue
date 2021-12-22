@@ -79,16 +79,30 @@
                                 注意: 只能上传doc/docx文件
                             </div>
                         </el-upload>
+                        <br/><br/>
+                        <el-button
+                            type="primary"
+                            style="background:rgb(50, 120, 220); border-color: rgb(50, 120, 220)"
+                            @click="entity"
+                            >实体抽取</el-button
+                        >
+                        <br/><br/>
+                        <div style = "color:#808080; font-size:small">
+                            注意: 点击后将不用输入需要替换的字符串，<br/>
+                            程序会自动提取文件中的实体到指定格式。
+                        </div>
                     </el-col>
 
                     <el-col :span="16">
                         <el-row>
-                            <el-col :span="10">
+                            <el-col :span="9" offset="1">
                                 <div style="font-size: 1.5em">转换前</div>
                                 <br />
                                 <el-input
+                                    id = "string_before"
                                     v-model="string_before"
                                     placeholder="转换前的字符串"
+                                    :disabled="disabled.one"
                                 ></el-input
                                 ><br /><br />
 
@@ -135,12 +149,14 @@
                                 ><br /><br />
                             </el-col>
 
-                            <el-col :span="10" offset="4">
+                            <el-col :span="9" offset="4">
                                 <div style="font-size: 1.5em">转换后</div>
                                 <br />
                                 <el-input
+                                    id = "string after"
                                     v-model="string_after"
-                                    placeholder="请输入转换后的字符串"
+                                    placeholder="转换后的字符串"
+                                    :disabled="disabled.one"
                                 ></el-input
                                 ><br /><br />
 
@@ -232,7 +248,8 @@ export default {
             fpath_list: [],
             fname_list: [], //denote the files to be processed
             formatted_fname_list: [], //denote the processed files
-
+            disabled: { one: false, },
+            flag: {zero : 0},
             headerObj: {
                 Authorization: "jwt " + localStorage.getItem("accessToken"),
             },
@@ -413,7 +430,20 @@ export default {
             this.fpath_list.splice(this.fname_list.indexOf(file.name), 1);
             this.fname_list.splice(this.fname_list.indexOf(file.name), 1);
         },
-
+        entity(){
+            if(this.flag.zero == 0){
+                this.string_before = "<ENT>";
+                this.string_after = "<ENT>";
+                this.disabled.one = true;
+                this.flag.zero = 1;
+            }
+            else if(this.flag.zero == 1){
+                this.string_before = ""
+                this.string_after = ""
+                this.disabled.one = false;
+                this.flag.zero = 0;
+            }
+        },
         onBeforeUpload(file) {
             console.log(file.type);
             const isDoc =
@@ -499,6 +529,7 @@ export default {
 <style scoped>
 .word {
     height: 100%;
+    background-color: rgb(255, 255, 255);
 }
 .title {
     background-color: #78a0cf;
