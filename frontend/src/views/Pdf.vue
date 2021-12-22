@@ -189,7 +189,9 @@ export default {
             //console.log(this.formatted_fname_list)
             for (var i = 0; i < this.formatted_fname_list.length; i++) {
                 console.log(this.formatted_fname_list[i]);
-                const filename = this.formatted_fname_list[i];
+                const filename = this.formatted_fname_list[i].split(
+                    "-(&EF&)-"
+                )[2];
                 this.$axios
                     .get(
                         "http://localhost:5000/download/" +

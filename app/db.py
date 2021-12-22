@@ -75,10 +75,13 @@ def create_user(username, passwd, nickname='Anonymous'):
         return False, "User Already Exists or Unknown Error"
 
 def record_file(file_name, processor):
-    splite_fn = file_name.split('-')
+    splite_fn = file_name.split('-(&EF&)-')
     uid = splite_fn[0]
     docId = int(splite_fn[1])
     filename = splite_fn[2]
+
+    if uid == 'None':
+        return
 
     db = get_db()
     cursor = db.cursor()
@@ -118,7 +121,7 @@ def get_history_fileList(uid, page_num):
         return None
 
 def gen_path(data):
-    return data[0] + '-' + str(data[1]) + '-' + data[2]
+    return data[0] + '-(&EF&)-' + str(data[1]) + '-(&EF&)-' + data[2]
 
 def check_password(username, passwd):
     try:
@@ -149,7 +152,18 @@ def check_password(username, passwd):
         }
         return 1, info
       
+vis_cnt = 0                 #游客模式文件计数
 def allocate_fileID(uid):
+    if uid is None:
+        global vis_cnt
+        info = {
+                "idx": vis_cnt,
+                "info": 'OK'
+        }
+        vis_cnt = vis_cnt + 1
+
+        return True, info
+
     try:
         db = get_db()
         cursor = db.cursor()
