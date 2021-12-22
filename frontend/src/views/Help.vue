@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="help">
     <el-container>
       <el-header>
         <el-row>
@@ -60,11 +60,20 @@
 </script>
 
 <style scoped>
+.help {
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+}
 
 .title {
   background-color: #c7ede6;
   width: 150px;
   padding-left: 45px;
+}
+
+.el-container {
+    background-color: rgb(255, 255, 255);
+    min-width: 1100pt;
 }
 
 .el-main {
