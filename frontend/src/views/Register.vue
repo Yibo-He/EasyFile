@@ -116,7 +116,7 @@ export default {
             post_request.append("nickname", this.param.nickname);
             let _this = this;
             this.$axios
-                .post("http://localhost:5000/auth/register", post_request, {
+                .post("http://39.104.16.83:3001/auth/register", post_request, {
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
                     },

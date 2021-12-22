@@ -111,7 +111,7 @@ export default {
         getName(initflag) {
             if (!initflag) {
                 this.$axios
-                    .get("http://localhost:5000/homepage/", {
+                    .get("http://39.104.16.83:3001/homepage/", {
                         headers: {
                             Authorization:
                                 "jwt " + localStorage.getItem("accessToken"),

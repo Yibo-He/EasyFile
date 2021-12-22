@@ -53,7 +53,7 @@
                         <el-upload
                             class="upload-demo"
                             drag
-                            action="http://localhost:5000/upload_file"
+                            action="http://39.104.16.83:3001/upload_file"
                             multiple
                             :headers="headerObj"
                             :on-success="save_fnames"
@@ -192,7 +192,7 @@ export default {
                 const filename = this.formatted_fname_list[i];
                 this.$axios
                     .get(
-                        "http://localhost:5000/download/" +
+                        "http://39.104.16.83:3001/download/" +
                             this.formatted_fname_list[i],
                         {
                             responseType: "blob",
@@ -243,7 +243,7 @@ export default {
             //TODO: add requirements
             let _this = this;
             this.$axios
-                .post("http://localhost:5000/run_pdf2chart", post_request, {
+                .post("http://39.104.16.83:3001/run_pdf2chart", post_request, {
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
                         Authorization:

@@ -118,7 +118,7 @@ export default {
             post_request.append("password", sha256(this.loginParam.password));
 
             this.$axios
-                .post("http://localhost:5000/auth/login", post_request, {
+                .post("http://39.104.16.83:3001/auth/login", post_request, {
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
                     },

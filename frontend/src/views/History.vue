@@ -109,7 +109,7 @@ export default {
         gettableData(initflag) {
             if (!initflag) {
                 this.$axios
-                    .get("http://localhost:5000/homepage/", {
+                    .get("http://39.104.16.83:3001/homepage/", {
                         headers: {
                             Authorization:
                                 "jwt " + localStorage.getItem("accessToken"),
@@ -122,7 +122,7 @@ export default {
                             this.nickname = response.data.data.nickname;
                             this.$axios
                                 .get(
-                                    "http://localhost:5000/homepage/history_file/0",
+                                    "http://39.104.16.83:3001/homepage/history_file/0",
                                     {
                                         headers: {
                                             Authorization:
@@ -153,7 +153,7 @@ export default {
         handleDownload(row) {
             // console.log(row);
             this.$axios
-                .get("http://localhost:5000/download/" + row.path, {
+                .get("http://39.104.16.83:3001/download/" + row.path, {
                     headers: {
                         Authorization:
                             "jwt " + localStorage.getItem("accessToken"),
