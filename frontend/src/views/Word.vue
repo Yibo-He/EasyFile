@@ -224,11 +224,11 @@ export default {
             string_before: "",
             color_before: "",
             font_style_before: "",
-            font_size_before: "",
+            font_size_before: 0,
             string_after: "",
             color_after: "",
             font_style_after: "",
-            font_size_after: "",
+            font_size_after: 0,
             fpath_list: [],
             fname_list: [], //denote the files to be processed
             formatted_fname_list: [], //denote the processed files
@@ -239,7 +239,7 @@ export default {
 
             options_color: [
                 {
-                    value: "_color",
+                    value: "",
                     label: "所有(转换前)/默认(转换后)",
                 },
                 {
@@ -270,7 +270,7 @@ export default {
 
             options_font_style: [
                 {
-                    value: "_style",
+                    value: "",
                     label: "所有(转换前)/默认(转换后)",
                 },
                 {
@@ -436,31 +436,13 @@ export default {
             post_request.append("file_names", this.fpath_list.join(","));
 
             post_request.append("src_str", this.string_before);
-            if (this.font_style_before == "") {
-                this.font_style_before = "_style";
-            }
             post_request.append("src_typeface", this.font_style_before);
-            if (this.font_size_before == "") {
-                this.font_size_before = 0;
-            }
             post_request.append("src_size", this.font_size_before);
-            if (this.color_before == "") {
-                this.color_before = "_color";
-            }
             post_request.append("src_color", this.color_before);
 
             post_request.append("dst_str", this.string_after);
-            if (this.font_style_after == "") {
-                this.font_style_after = "_style";
-            }
             post_request.append("dst_typeface", this.font_style_after);
-            if (this.font_size_after == "") {
-                this.font_size_after = 0;
-            }
             post_request.append("dst_size", this.font_size_after);
-            if (this.color_after == "") {
-                this.color_after = "_color";
-            }
             post_request.append("dst_color", this.color_after);
 
             //TODO: add requirements
