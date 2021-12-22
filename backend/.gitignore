@@ -2,8 +2,6 @@
 __pycache__
 venv/
 *.pyc
-frontend/node_modules
-instance
 *.docx
 *.pdf
 *.zip
