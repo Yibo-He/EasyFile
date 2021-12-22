@@ -57,9 +57,14 @@
                             class="upload-demo"
                             drag
                             action="http://localhost:5000/upload_file"
+                            accept=".docx, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            :before-upload="onBeforeUpload"
                             multiple
+                            :limit="10"
                             :headers="headerObj"
                             :on-success="save_fnames"
+                            :file-list="fname_list"
+                            :on-remove="remove_fnames"
                             :with-credentials="true"
                             style="background-color: #c7ede6; width: 400px; padding: 10px"
                         >
@@ -74,16 +79,30 @@
                                 注意: 只能上传doc/docx文件
                             </div>
                         </el-upload>
+                        <br/><br/>
+                        <el-button
+                            type="primary"
+                            style="background:rgb(50, 120, 220); border-color: rgb(50, 120, 220)"
+                            @click="entity"
+                            >实体抽取</el-button
+                        >
+                        <br/><br/>
+                        <div style = "color:#808080; font-size:small">
+                            注意: 点击后将不用输入需要替换的字符串，<br/>
+                            程序会自动提取文件中的实体到指定格式。
+                        </div>
                     </el-col>
 
                     <el-col :span="16">
                         <el-row>
-                            <el-col :span="10">
+                            <el-col :span="9" offset="1">
                                 <div style="font-size: 1.5em">转换前</div>
                                 <br />
                                 <el-input
+                                    id = "string_before"
                                     v-model="string_before"
                                     placeholder="转换前的字符串"
+                                    :disabled="disabled.one"
                                 ></el-input
                                 ><br /><br />
 
@@ -130,12 +149,14 @@
                                 ><br /><br />
                             </el-col>
 
-                            <el-col :span="10" offset="4">
+                            <el-col :span="9" offset="4">
                                 <div style="font-size: 1.5em">转换后</div>
                                 <br />
                                 <el-input
+                                    id = "string after"
                                     v-model="string_after"
-                                    placeholder="请输入转换后的字符串"
+                                    placeholder="转换后的字符串"
+                                    :disabled="disabled.one"
                                 ></el-input
                                 ><br /><br />
 
@@ -219,22 +240,24 @@ export default {
             string_before: "",
             color_before: "",
             font_style_before: "",
-            font_size_before: "",
+            font_size_before: 0,
             string_after: "",
             color_after: "",
             font_style_after: "",
-            font_size_after: "",
+            font_size_after: 0,
+            fpath_list: [],
             fname_list: [], //denote the files to be processed
             formatted_fname_list: [], //denote the processed files
-
+            disabled: { one: false, },
+            flag: {zero : 0},
             headerObj: {
                 Authorization: "jwt " + localStorage.getItem("accessToken"),
             },
 
             options_color: [
                 {
-                    value: "_color",
-                    label: "-(所有)",
+                    value: "",
+                    label: "所有(转换前)/默认(转换后)",
                 },
                 {
                     value: "000000",
@@ -264,8 +287,8 @@ export default {
 
             options_font_style: [
                 {
-                    value: "_style",
-                    label: "-(所有)",
+                    value: "",
+                    label: "所有(转换前)/默认(转换后)",
                 },
                 {
                     value: "宋体",
@@ -294,7 +317,7 @@ export default {
             ],
 
             options_size: [
-                { value: 0, label: "-(所有)" },
+                { value: 0, label: "所有(转换前)/默认(转换后)" },
                 { value: 42, label: "初号" },
                 { value: 36, label: "小初" },
                 { value: 26, label: "一号" },
@@ -342,12 +365,13 @@ export default {
             localStorage.removeItem("accessToken");
             window.location.reload();
         },
+
         download() {
-            //console.log('line 230')
-            //console.log(this.formatted_fname_list)
             for (var i = 0; i < this.formatted_fname_list.length; i++) {
                 console.log(this.formatted_fname_list[i]);
-                const filename = this.formatted_fname_list[i].split("-")[2];
+                const filename = this.formatted_fname_list[i].split(
+                    "-(&EF&)-"
+                )[2];
                 this.$axios
                     .get(
                         "http://localhost:5000/download/" +
@@ -363,6 +387,14 @@ export default {
                     )
                     .then((response) => {
                         if (!response) {
+                            return;
+                        }
+                        console.log(response.headers["content-type"]);
+                        if (
+                            response.headers["content-type"] ===
+                            "application/json"
+                        ) {
+                            this.$message.error("下载列表为空或无下载权限!");
                             return;
                         }
                         const url = window.URL.createObjectURL(response.data);
@@ -382,37 +414,65 @@ export default {
             console.log(response);
             for (var i = 0; i < response.length; i++) {
                 if (response[i].state == 0) {
-                    this.fname_list.push(response[i].filename);
+                    this.fname_list.push(
+                        response[i].filename.split("-(&EF&)-")[2]
+                    );
+                    this.fpath_list.push(response[i].filename);
                     console.log(this.fname_list);
-                    //console.log('['+this.fname_list.join(',')+']')
                 } else {
                     alert(response[i].info);
                 }
             }
         },
+
+        remove_fnames(file, fileList) {
+            console.log(file.name);
+            this.fpath_list.splice(this.fname_list.indexOf(file.name), 1);
+            this.fname_list.splice(this.fname_list.indexOf(file.name), 1);
+        },
+        entity(){
+            if(this.flag.zero == 0){
+                this.string_before = "<ENT>";
+                this.string_after = "<ENT>";
+                this.disabled.one = true;
+                this.flag.zero = 1;
+            }
+            else if(this.flag.zero == 1){
+                this.string_before = ""
+                this.string_after = ""
+                this.disabled.one = false;
+                this.flag.zero = 0;
+            }
+        },
+        onBeforeUpload(file) {
+            console.log(file.type);
+            const isDoc =
+                file.type ===
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            const isLt10M = file.size / 1024 / 1024 < 10;
+
+            if (!isDoc) {
+                this.$message.error("上传文件只能是docx文档格式!");
+            }
+            if (!isLt10M) {
+                this.$message.error("上传文件大小不能超过 10MB!");
+            }
+            return isDoc && isLt10M;
+        },
+
         start() {
             //console.log('line 245');
             var post_request = new FormData();
-            post_request.append("file_names", this.fname_list.join(","));
+            post_request.append("file_names", this.fpath_list.join(","));
+
             post_request.append("src_str", this.string_before);
-            if (this.font_style_before == "_style") {
-                this.font_style_before = "";
-            }
             post_request.append("src_typeface", this.font_style_before);
             post_request.append("src_size", this.font_size_before);
-            if (this.color_before == "_color") {
-                this.color_before = "";
-            }
             post_request.append("src_color", this.color_before);
+
             post_request.append("dst_str", this.string_after);
-            if (this.font_style_after == "_style") {
-                this.font_style_after = "";
-            }
             post_request.append("dst_typeface", this.font_style_after);
             post_request.append("dst_size", this.font_size_after);
-            if (this.color_after == "_color") {
-                this.color_after = "";
-            }
             post_request.append("dst_color", this.color_after);
 
             //TODO: add requirements
@@ -438,6 +498,7 @@ export default {
                         this.$message({ message: "处理完成！" });
                     }
                     this.fname_list = [];
+                    this.fpath_list = [];
                 })
                 .catch((response) => {
                     console.log(response);
@@ -450,6 +511,7 @@ export default {
 <style scoped>
 .word {
     height: 100%;
+    background-color: rgb(255, 255, 255);
 }
 .title {
     background-color: #78a0cf;

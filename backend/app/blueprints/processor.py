@@ -32,7 +32,7 @@ def upload_doc():
                 try:
                     docID = info["idx"]
                     print("docid: ", docID)
-                    file_name = str(g.userID) + '-' +  str(docID) + '-' + file_obj.filename
+                    file_name = str(g.userID) + '-(&EF&)-' +  str(docID) + '-(&EF&)-' + file_obj.filename
                     print("file_name: ", file_name)
                     file_path = os.path.join(current_app.config['TEMP_PATH'], file_name)
                     file_obj.save(file_path)
@@ -77,7 +77,7 @@ def str2list(filename):
 
 def check_file_permission(file_names):
     for fn in file_names:
-        if str(g.userID) != (fn.split('-'))[0]:
+        if str(g.userID) != (fn.split('-(&EF&)-'))[0]:
             return "Permission denied"
 
     return None

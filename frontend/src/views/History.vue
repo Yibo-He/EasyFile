@@ -181,6 +181,7 @@ export default {
 <style scope>
 .history {
     height: 100%;
+    background-color: rgb(255, 255, 255);
 }
 
 .title {
@@ -197,6 +198,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     min-width: 1030pt;
+    background-color: rgb(255, 255, 255);
 }
 
 .el-header {
@@ -215,6 +217,7 @@ export default {
 
 .el-main {
     color: rgb(7, 7, 7);
+    background-color: rgb(255, 255, 255);
     height: 100%;
     min-width: 1030pt;
     text-align: center;

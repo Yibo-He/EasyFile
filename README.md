@@ -1,7 +1,6 @@
 # EasyFile
 
-
-### Readme
+## Backend
 
 After you clone this repo, please
 
@@ -29,19 +28,34 @@ TEMP_PATH = r'/c/Users/.../temp'  # must be a absolute path
 
 4. run `flask run`
 
+## Frontend
 
-#### Some bugs to be fixed:
+## Project setup
 
-1. 出现处理错误的时候没有反馈到前端上，下载的时候是一个空的`json`文件?
-2. 处理长度大于1的列表似乎有问题
-3. entity tagger应该作为全局变量，在初始化的时候Load进来。现在发送请求之后每次都要重新load，要等10秒，因为g不管用...
+```
+npm install
 
-#### Fixed bugs (to be checked):
+npm install axios
+```
 
-1. 处理不了`.doc`（可以不用解决，但是要写清楚提示，之前的提示是上传错误，现在已经改过了）
+### Compiles and hot-reloads for development
 
+```
+npm run serve
+```
 
+### Compiles and minifies for production
 
-#### Entity Recognition
+```
+npm run build
+```
 
-把“转换前的字符串”写成`<ENT>`, 就会识别所有的entity然后进行转换。如果不改内容，则把“转换前的字符串”也写成`<ENT>`。
+### Lints and fixes files
+
+```
+npm run lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -160,6 +160,7 @@ export default {
 <style scope>
 .home {
     height: 100%;
+    background-color: rgb(255, 255, 255);
 }
 
 .title {
@@ -194,6 +195,7 @@ export default {
 
 .el-main {
     color: rgb(7, 7, 7);
+    background-color: rgb(255, 255, 255);
     height: 100%;
     min-width: 740pt;
     text-align: center;
