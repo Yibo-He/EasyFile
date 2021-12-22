@@ -59,7 +59,3 @@ npm run lint
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
-
-#### Entity Recognition
-
-把“转换前的字符串”写成`<ENT>`, 就会识别所有的 entity 然后进行转换。如果不改内容，则把“转换前的字符串”也写成`<ENT>`。
