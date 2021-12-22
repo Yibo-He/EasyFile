@@ -3,6 +3,11 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 import pymysql
 import datetime
+import ltp
+
+print("initialize ltp...")
+my_ltp = ltp.LTP()
+print("finish.")
 
 def init_app(app):
     app.teardown_appcontext(close_db)

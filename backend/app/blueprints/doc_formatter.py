@@ -9,7 +9,7 @@ from .processor import bp, check_file_permission, del_temp_files
 from ..tools.formatter import formatter
 from ..tools.ner import get_ner  # this is for debug. Not necessary when it's integrated to formatter.
 from ..db import record_file
-
+from ..db import my_ltp
 
 @bp.route('/run_formatter', methods=['POST'])
 def run_formatter():
@@ -51,7 +51,7 @@ def run_formatter():
                 jsondata.append(file_info)
 
             try:
-                formatted_doc = formatter(raw_doc, requirements)
+                formatted_doc = formatter(raw_doc, requirements, my_ltp)
                 # get_ltp calls to load the tagger. The loading takes about 10s. We can do this in the initialization in the future. 
 
                 formatted_name = file_name
@@ -72,6 +72,7 @@ def run_formatter():
     return jsonify(jsondata)
 
 # this is for debug. You can try extracting entities in a sentence (in Chinese) with postman.
+'''
 @bp.route('/ner/<sentence>', methods=['GET','POST'])
 def get_entities(sentence):
     if 'myltp' in g:
@@ -91,6 +92,7 @@ def get_ltp():
     if "myltp" not in g:
         g.myltp = ltp.LTP()
     return g.myltp
+'''
 
 def get_reqs(form):
     req_dict = {}
