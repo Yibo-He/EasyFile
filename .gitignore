@@ -7,3 +7,4 @@ instance
 *.docx
 *.pdf
 *.zip
+.idea
