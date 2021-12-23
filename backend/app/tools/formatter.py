@@ -1,4 +1,5 @@
 from .process import process
+from .process import process_ent
 from .ner import get_ner
 def formatter(document, requirements, myltp=None):
     # print("OK")
@@ -15,17 +16,19 @@ def formatter(document, requirements, myltp=None):
         ents = get_ner(sents, myltp)
         print("entities: ", ents)
         # all_ents = [i[1] for i in ents]
-        reqs = []
-        for ent_t in ents:
-            ent = ent_t[1] # only use the name
-            tmp = requirements[0].copy()
-            tmp['src_str'] = ent
-            if requirements[0]['dst_str'] == '<ENT>':
-                tmp['dst_str'] = ent
-            reqs.append(tmp)
-        requirements = reqs
-        print("transformed requirements: ", requirements)
-
+        # reqs = []
+        # for ent_t in ents:
+        #     ent = ent_t[1] # only use the name
+        #     tmp = requirements[0].copy()
+        #     tmp['src_str'] = ent
+        #     if requirements[0]['dst_str'] == '<ENT>':
+        #         tmp['dst_str'] = ent
+        #     reqs.append(tmp)
+        req = requirements[0].copy()
+        req['src_str'] = [ent[1] for ent in ents]
+        req['dst_str'] = [ent[1] for ent in ents]
+        print("transformed requirements: ", req)
+        document = process_ent(document,req)
 
     for requirement in requirements:
         document=process(document,requirement)

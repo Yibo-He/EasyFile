@@ -4,7 +4,7 @@ from . import runtools
 from .myfont import Font
 from .myfont import RepStr
 from docx.oxml.ns import qn
-
+from .AC import Trie
 
 def get_typeface(run, paragraph, default):
     name = default.name
@@ -136,7 +136,7 @@ def replace(document, default, old, new):
             if new.font.color:
                 run.font.color.rgb = RGBColor.from_string(new.font.color)
             # print(new.font.name)
-            if run.font.name:
+            if new.font.name:
                 run.font.name = new.font.name
                 run._element.rPr.rFonts.set(qn('w:eastAsia'),new.font.name)
             if new.font.size:
@@ -154,10 +154,41 @@ def replace(document, default, old, new):
                 if new.font.color:
                     run.font.color.rgb = RGBColor.from_string(new.font.color)
                 # print(new.font.name)
-                if run.font.name:
+                if new.font.name:
                     run.font.name = new.font.name
                     run._element.rPr.rFonts.set(qn('w:eastAsia'), new.font.name)
                 if new.font.size:
                     run.font.size = Pt(new.font.size)
     return
-  
+
+
+
+def replace_ent(document, default, old, new):
+    trie=Trie(old.str)
+    for para in document.paragraphs:
+        for run in para.runs:
+            if (len(run.text) > 1):
+                t = range(len(run.text))
+                runtools.split_run_by(para, run, t)
+    myruns = []
+    for para in document.paragraphs:
+        for run in para.runs:
+            if len(run.text) < 1:
+                continue
+            nowfont = get_font(run, para, default)
+            myruns.append([run, nowfont])
+    poses = trie.search(myruns)
+    for pos in poses:
+        for i in range(pos[0],pos[0]-pos[1],-1):
+            run = myruns[i][0]
+            if new.font.color:
+                run.font.color.rgb = RGBColor.from_string(new.font.color)
+            # print(new.font.name)
+            if new.font.name:
+                run.font.name = new.font.name
+                run._element.rPr.rFonts.set(qn('w:eastAsia'), new.font.name)
+            if new.font.size:
+                run.font.size = Pt(new.font.size)
+
+    return
+

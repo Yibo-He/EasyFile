@@ -1,7 +1,0 @@
-*.DS_store
-__pycache__
-venv/
-*.pyc
-*.docx
-*.pdf
-*.zip
