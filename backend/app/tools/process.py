@@ -11,6 +11,7 @@ import zipfile
 import docx
 
 from .replace import replace
+from .replace import replace_ent
 
 import json
 from .myfont import RepStr
@@ -62,3 +63,24 @@ def process(document,requirements):
 
 
 
+def process_ent(document,requirements):
+    # configf = open(configfile, encoding='utf-8')
+    # config = json.load(configf)
+    # configf.close()
+    # if len(sys.argv) > 1:
+    #     config = sys.argv[1]
+    config = requirements
+    filename = "temp_work"
+    document.save(filename+".docx")
+    shutil.copyfile(filename + '.docx', filename + '.zip')
+    unzip_file(filename + '.zip', filename)
+    old = RepStr(str=config["src_str"], name=config["src_typeface"], size=config["src_size"], color=config["src_color"])
+    new = RepStr(str=config["dst_str"], name=config["dst_typeface"], size=config["dst_size"], color=config["dst_color"])
+    # document = docx.Document(filename + ".docx")
+    default = get_default(filename)
+    replace_ent(document, default, old, new)
+    # document.save("new.docx")
+    os.remove(filename + '.zip')
+    os.remove(filename+'.docx')
+    shutil.rmtree(filename)
+    return document
