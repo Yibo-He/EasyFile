@@ -14,6 +14,7 @@ from ..db import my_ltp
 @bp.route('/run_formatter', methods=['POST'])
 def run_formatter():
     file_names = request.form['file_names'].split(',')
+    cwd_bak = os.getcwd()
     print(file_names)
     
     requirements = get_reqs(request.form)
@@ -32,6 +33,11 @@ def run_formatter():
         return jsonify(jsondata)
     else:
         for file_name in file_names:
+            try:
+                os.mkdir(file_name)
+            except Exception as e:
+                print(e)
+                pass
             file_info = file_template.copy()
             file_info['original_name'] = file_name
             try:
@@ -51,7 +57,12 @@ def run_formatter():
                 jsondata.append(file_info)
 
             try:
+                os.chdir(os.path.join(cwd_bak, file_name))
+
+                print(os.getcwd())
                 formatted_doc = formatter(raw_doc, requirements, my_ltp)
+
+                os.chdir(cwd_bak)
                 # get_ltp calls to load the tagger. The loading takes about 10s. We can do this in the initialization in the future. 
 
                 formatted_name = file_name
@@ -62,12 +73,18 @@ def run_formatter():
                 del_temp_files(path)
 
             except:
+                os.chdir(cwd_bak)
                 error = 'failed to transform the file: ' + file_name
                 file_info['state'] = 2
                 file_info['info'] = error
 
+            try:
+                print("rm -R \"%s\"" % file_name)
+                os.system("rm -R \"%s\"" % file_name)
+            except:
+                pass
             jsondata.append(file_info)
-            
+
     print(jsondata)
     return jsonify(jsondata)
 
