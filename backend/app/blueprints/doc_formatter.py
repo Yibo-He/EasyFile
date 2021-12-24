@@ -10,6 +10,7 @@ from ..tools.formatter import formatter
 from ..tools.ner import get_ner  # this is for debug. Not necessary when it's integrated to formatter.
 from ..db import record_file
 from ..db import my_ltp
+import multiprocessing
 
 @bp.route('/run_formatter', methods=['POST'])
 def run_formatter():
@@ -55,14 +56,17 @@ def run_formatter():
                 file_info['state'] = 3
                 file_info['info'] = error
                 jsondata.append(file_info)
-
             try:
-                os.chdir(os.path.join(cwd_bak, file_name))
+                # os.chdir(os.path.join(cwd_bak, file_name))
 
-                print(os.getcwd())
-                formatted_doc = formatter(raw_doc, requirements, my_ltp)
-
-                os.chdir(cwd_bak)
+                # print(os.getcwd())
+                #formatted_doc = formatter(raw_doc, requirements, my_ltp)
+                runpath=os.path.join(cwd_bak, file_name)
+                p = multiprocessing.Process(target=formatter,args=(raw_doc,requirements,my_ltp,runpath))
+                p.start()
+                p.join()
+                formatted_doc = docx.Document(os.path.join(runpath, "res.docx"))
+                # os.chdir(cwd_bak)
                 # get_ltp calls to load the tagger. The loading takes about 10s. We can do this in the initialization in the future. 
 
                 formatted_name = file_name
@@ -72,8 +76,8 @@ def run_formatter():
                 record_file(formatted_name, "doc_formatter")
                 del_temp_files(path)
 
-            except:
-                os.chdir(cwd_bak)
+            except Exception as e:
+                print(e)
                 error = 'failed to transform the file: ' + file_name
                 file_info['state'] = 2
                 file_info['info'] = error
