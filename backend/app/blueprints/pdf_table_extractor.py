@@ -16,6 +16,8 @@ def run_pdf2chart():
 
     cwd_bak = os.getcwd()
     pages = request.form['src_pages']
+    if pages=="":
+        pages="all"
     jsondata = []
     file_template = {'state': 0, 'info':'success', 'chart_name':"invalid", 'original_name': "invalid"}
 
