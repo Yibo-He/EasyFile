@@ -1,9 +1,11 @@
 from .process import process
 from .process import process_ent
 from .ner import get_ner
-def formatter(document, requirements, myltp=None):
-    # print("OK")
+import os
 
+def formatter(document, requirements, myltp=None,cwd = os.getcwd()):
+    # print("OK")
+    os.chdir(cwd)
     # transform the requirements
     print("requirements: ", requirements)
     if len(requirements) == 1 and requirements[0]['src_str'] == '<ENT>':
@@ -32,4 +34,4 @@ def formatter(document, requirements, myltp=None):
 
     for requirement in requirements:
         document=process(document,requirement)
-    return document
+    document.save("res.docx")

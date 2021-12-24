@@ -101,7 +101,9 @@ def save_tables(tables, save_path):
     tables.export(save_path,f='excel')
     # writer.save()
 
-def process(file_path,rules=['all'],format="csv",ext="csv",debug = False):
+def process(file_path,rules=['all'],format="csv",ext="csv",cwd = os.getcwd(),debug = False):
+    os.chdir(cwd)
+
     tables = []
     filename="tmp.pdf"
 
@@ -132,17 +134,5 @@ def process(file_path,rules=['all'],format="csv",ext="csv",debug = False):
             for j,x in enumerate(table):
                 x.to_csv('test' + str(i)+','+str(j)+'.csv')
     zf.close()
-    with open("output.zip","rb") as f:
-        ret = f.read()
-    os.remove("output.zip")
-    return ret
 
 
-if __name__ == "__main__":
-    # pdf2image("test.pdf","test",10,10,0)
-    filename = r"D:\Downloads\EasyFile\temp\None&0&test.pdf"
-    x = open(filename,"rb")
-    pdf = x.read()
-    ret = process(pdf,rules=["2,3","1-2"],format='excel',ext="xlsx",debug=False)
-    with open('out'+".zip","wb") as f:
-        f.write(ret)
