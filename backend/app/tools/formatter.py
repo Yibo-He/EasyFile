@@ -15,7 +15,11 @@ def formatter(document, requirements, myltp=None,cwd = os.getcwd()):
             for run in para.runs:
                 if (len(run.text) > 1):
                     sents.append(run.text)
-        ents = get_ner(sents, myltp)
+        try:
+            ents = get_ner(sents, myltp)
+        except Exception as e:
+            print(e)
+            ents=[]
         print("entities: ", ents)
         # all_ents = [i[1] for i in ents]
         # reqs = []
