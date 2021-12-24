@@ -10,11 +10,11 @@ def formatter(document, requirements, myltp=None,cwd = os.getcwd()):
     print("requirements: ", requirements)
     if len(requirements) == 1 and requirements[0]['src_str'] == '<ENT>':
         print("In the processing of entites.")
-        sents = []
+        sents = ""
         for para in document.paragraphs:
             for run in para.runs:
-                if (len(run.text) > 1):
-                    sents.append(run.text)
+                if len(run.text) > 0:
+                    sents+=run.text
         try:
             ents = get_ner(sents, myltp)
         except Exception as e:
