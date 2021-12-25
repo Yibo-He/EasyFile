@@ -5,7 +5,7 @@ First you should clone this repo, and then do the following steps to run the bac
 ## Backend
 
 1. Enter the directory of backend(./backend)
-2. Install ghostscript and mysql. If you are using ubuntu, you can run:
+2. Install ghostscript, mysql and flask. If you are using ubuntu, you can run:
 ```
 sudo apt install ghostscript mysql-server python3-flask
 ```
